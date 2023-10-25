@@ -1,0 +1,153 @@
+\chapter{Introducción}
+\label{cap:introduccion}
+
+%\chapterquote{Frase célebre dicha por alguien inteligente}{Autor}
+\section{Antecedentes}
+La bioinformática es una disciplina científica que persigue la investigación, desarrollo y aplicación de métodos computacionales y aproximaciones en problemas de índole biológico o relacionados con la salud.
+
+Entre estos problemas, uno de los más destacados es el problema de predicción del plegado de proteínas. Este problema consiste en predecir, dada una cadena de aminoácidos, la estructura tridimensional que tendrá la proteína resultante. La importancia de este problema radica en el hecho de que esta estructura es de vital importancia para el correcto desarrollo de las funciones asociadas a la proteína. Tanto es así que se ha probado que un plegamiento incorrecto de proteínas puede provocar enfermedades. Además, poder predecir la estructura ayudaría a avanzar en el desarrollo de proteínas artificiales en laboratorios en el ámbito de la salud.
+
+En el marco más teórico, se han desarrollado una variedad de modelos matemáticos con los que estudiar la complejidad computacional del problema, esto es, la viabilidad de encontrar la solucion al problema en tiempo razonable. Algunos resultados apuntarían a que este problema resultaría ser $\mathcal{NP}$-completo. Sin embargo, hay discusiones sobre el correcto modelizado del problema que podría arrojar una falsa complejidad sobre el mismo. De cualquier manera, con otros modelos más completos se intuye la $\mathcal{NP}$-completitud del problema. Esto también nos lleva a interesarnos por la aproximabilidad del problema, es decir, la viabilidad de obtener soluciones cercanas a la óptima en un tiempo razonable. Más adelante daremos una definición más específica sobre los conceptos de complejidad y aproximabilidad mencionados anteriormente.
+
+\textcolor{red}{Aún habrá que añadir cosas.}
+
+\newpage
+
+\section{Objetivos del trabajo}
+\textcolor{red}{Aún no tengo esto nada claro. Habrá que cambiarlo más adelante. Digamos el estudio de varios modelos y la definición de alguno propio y hablar sobre la aproximabilidad de los distintos modelos. No tanto sobre la complejidad.}
+
+\section{Plan de trabajo}
+\textcolor{red}{De nuevo, muy pronto para escribirlo.}
+
+\chapter{Complejidad y Aproximabilidad}
+En este capítulo haremos una introducción a las Teorías de Complejidad y Aproximabilidad. Definiremos los conceptos más importantes que serán la base de este trabajo incluyendo los tipos de problemas que se estudian y las clasificaciones de los mismos.
+
+En este sentido, cubriremos los problemas de decisión y las clases $\mathcal{P}$ y $\mathcal{NP}$, así como los conceptos de $\mathcal{NP}$-completitud y $\mathcal{NP}$-dureza, pasando por las reducciones de problemas que nos sirven para clasificar. Por otro lado, hablaremos de los problemas de optimización y de las clases de problemas $\mathcal{PO}$, $\mathcal{NPO}$ y muchas otras clases intermedias.
+
+\section{Problemas de Decisión y Clases de Complejidad}
+Los problemas de decisión podrían verse intuitivamente como aquellos que dada una entrada devuelven una respuesta de sí o no. Este tipo de problemas son la base que usamos para hablar de computabilidad y complejidad. Definimos a continuación los conceptos básicos a tener en cuenta para hablar de complejidad, que se basan en los definidos en \cite{compcomplexbarak}.
+
+\begin{definicion}
+Dada una función booleana $f: \{0,1\}^* \rightarrow \{0,1\}$, llamamos \textbf{problema de decisión} al conjunto $L_f = \{x \in \{0,1\}^{*} \ | \ f(x) = 1\}$.
+\end{definicion}
+
+\begin{definicion}
+Suponemos que tenemos cintas de longitud infinita donde podemos leer y escribir símbolos moviéndonos solo a la derecha o la izquierda y un registro donde guardar el último estado de la máquina. Definimos una \textbf{Máquina de Turing} $M$ como la tupla $(\Gamma, Q, \delta)$, donde:
+\begin{itemize}
+    \item[$\bullet$] $\Gamma$ es un conjunto de símbolos que pueden ser escritos en las cintas de $M$. Para nuestro caso podemos asumir que $\Gamma$ contiene un símbolo vacío, un símbolo de inicio y los números 0 y 1.
+    \item[$\bullet$] $Q$ es un conjunto de posibles estados que pueden guardarse en el registro de $M$. Asumimos que el registro incialmente contiene el estado inicial y que existe un estado final de parada.
+    \item[$\bullet$] $\delta$ es una función $\delta: Q \times \Gamma^{k} \rightarrow Q \times \Gamma^{k-1} \times \{L,S,R\}^{k}$ que describe las reglas que $M$ seguirá en cada paso y en cada cinta (L significa left, R significa right y S significa stay. Corresponde en español a moverse a la izquierda, la derecha o no moverse). Esta función se llama función de transición de $M$.
+\end{itemize}
+\end{definicion}
+Existen resultados importantes sobre máquinas de Turing que no vamos a probar en este trabajo pero que son necesarios para definir conceptos clave del trabajo. Estos dos resultados son:
+
+\begin{proposicion}
+Las siguientes afirmaciones son ciertas:
+\begin{itemize}
+    \item[$\bullet$] Cada cadena $x \in \{0,1\}^*$ representa alguna máquina de Turing.
+    \item[$\bullet$] Cada máquina de Turing puede ser representada con infinitas cadenas distintas de $\{0,1\}^*$
+\end{itemize}
+\end{proposicion}
+
+\begin{proposicion}
+Existe una \textbf{Máquina de Turing Universal} $\mathcal{U}$ capaz de simular el comportamiento de cualquier otra dada su definición binaria. Esto lo representamos como $\mathcal{U}(x,\alpha) = M_{\alpha}(x)$.
+\end{proposicion}
+
+\begin{definicion}[Computar una función y tiempo de cómputo]
+Dadas dos funciones $f: \{0,1\}^* \rightarrow \{0,1\}^*$ y $T: \mathbb{N} \rightarrow \mathbb{N}$ y una máquina de Turing $M$, decimos que $M$ computa $f$ en tiempo $T(n)$ si $\forall x \in \{0,1\}^*$ y suponiendo que $M$ está en su configuración inicial con $x$ en la cinta de entrada entonces la máquina llega al estado de parada (a partir de ahora diremos que la máquina termina) después de a lo sumo $T(|x|)$ pasos con $f(x)$ escrito en la cinta de salida. \\
+Decimos que $M$ computa $f$ si computa $f$ en tiempo $T(n)$ para alguna función $T: \mathbb{N} \rightarrow \mathbb{N}$.
+\end{definicion}
+
+Es importante ver que estas definiciones tratan los casos peores, pues el tiempo de computabilidad es una cota superior para la instancia que más pasos necesite para terminar. Con estas definiciones en mente ya podemos hablar de las clases de complejidad que dan lugar al famoso problema de P vs NP, uno de los llamados problemas del milenio.
+
+\begin{definicion}[Clase $\mathcal{P}$]
+La \textbf{clase $\mathcal{P}$} es el conjunto de todos los problemas de decisión tales que para cada $f$ problema de decisión existe $p$ polinomio por el cual $f$ es computable en tiempo $p$.
+\end{definicion}
+
+Esta clase corresponde a la de los problemas ``resolubles'' en tiempo polinómico. Ahora hablaremos de la clase $\mathcal{NP}$, que es intuitivamente la de los problemas con solución ``verificable'' en tiempo polinómico. 
+\begin{definicion}[Clase $\mathcal{NP}$]
+Un problema de decisión $L_f$ está en $\mathcal{NP}$ si existe un polinomio $p: \mathbb{N} \rightarrow \mathbb{N}$ y una máquina de Turing M de tiempo polinómico tal que
+$$\forall x \in \{0,1\}^{*}, \ x \in L_f \Leftrightarrow \exists u \in \{0,1\}^{p(|x|)} \ tal \ que \ M(x, u) = 1$$
+\end{definicion}
+
+Cabe destacar que conseguir una solución en tiempo polinómico implica que la verificación también se hará en tiempo polinómico, por lo que se tiene que $\mathcal{P} \subseteq \mathcal{NP}$ de forma sencilla. Sin embargo, que la inclusión sea estricta o no es objeto de fuerte debate, pues las consecuencias de que ambos conjuntos fuesen iguales serían trascendentales.
+
+\begin{definicion}
+    Decimos que un problema de decisión $A$ es reducible Karp en tiempo polinomial a otro problema de decisión B, y denotamos $A \leq_{p} B$, si existe una función $f: \{0,1\}^* \rightarrow \{0,1\}^*$ computable en tiempo polinómico tal que $$\forall x \in \{0,1\}^*, \ x \in A \Leftrightarrow f(x) \in B$$
+\end{definicion}
+\begin{definicion}[$\mathcal{NP}$-dureza]
+Decimos que un problema B es $\mathcal{NP}$-duro si $A \leq_{p} B \ \forall A \in \mathcal{NP}$.
+\end{definicion}
+
+\begin{definicion}[$\mathcal{NP}$-completitud]
+    Decimos que un problema B es $\mathcal{NP}$-completo si es $\mathcal{NP}$-duro y $B \in \mathcal{NP}$.
+\end{definicion}
+
+\section{Problemas de Optimización y Clases de Aproximabilidad}
+Paralelamente a los problemas de decisión podemos definir los problemas de optimización, en los cuales la idea es obtener el valor máximo o mínimo posible para una función. De aquí podemos obtener clases de problemas en función de lo factible que es encontrar soluciones cercanas a la óptima. Las definiciones que se especifican a continuación se basan en los artículos \cite{aproxpaschos} y \cite{aproxcres}.
+\begin{definicion}
+Un \textbf{problema de optimización} es una 4-tupla P=($\mathcal{I}$, Sol, m, goal) donde:
+\begin{itemize}
+    \item[$\bullet$] $\mathcal{I}$ es el conjunto de instancias del problema.
+    \item[$\bullet$] Dada una instancia $I \in \mathcal{I}$, $Sol(I)$ es el conjunto de soluciones factibles para $I$.
+    \item[$\bullet$] $m: \mathcal{I} \times Sol \rightarrow \mathbb{N}$ es la función de valor objetivo, que asocia a cada instancia y cada solución un valor numérico, que podemos suponer natural. En este caso por abuso de notación denotamos $Sol = \displaystyle{\bigcup_{I \in \mathcal{I}} Sol(I)}$.
+    \item[$\bullet$] $goal \in \{max, min\}$ indica si el problema es de maximización o de minimización. 
+\end{itemize}
+\end{definicion}
+
+\begin{definicion}
+    Decimos que un problema de optimización pertenece a la \textbf{clase $\mathcal{NPO}$} si:
+    \begin{itemize}
+        \item[$\bullet$] El conjunto de instancias $\mathcal{I}$ es reconocible en tiempo polinómico. Es decir, dado $I$, el problema de decisión que resuelve si $I \in \mathcal{I}$ pertenece a la clase $\mathcal{P}$.
+        \item[$\bullet$] Las soluciones factibles de una instancia de un problema son cortas. Es decir, dado $I \in \mathcal{I}$, $\exists \ p$ un polinomio tal que $\forall y \in Sol(I)$ se tiene $y \leq p(I)$. Además, se puede calcular la factibilidad de una solución corta en tiempo polinómico. Esto es, dado un $y \leq p(I)$, es decidible en tiempo polinómico si $y \in Sol(I)$.
+        \item[$\bullet$] $\forall I \in \mathcal{I}, \ \forall S \in Sol(I), \ m(I,S)$ se puede calcular en tiempo polinómico.
+    \end{itemize}
+\end{definicion}
+
+\begin{definicion}
+    Decimos que un problema de optimización pertenece a la clase $\mathcal{PO}$ si:
+    \begin{itemize}
+        \item[$\bullet$] Pertenece a la clase $\mathcal{NPO}$.
+        \item[$\bullet$] $\forall I \in \mathcal{I}$ se puede encontrar una solución óptima al problema en tiempo polinómico.
+    \end{itemize}
+\end{definicion}
+
+\begin{definicion}
+    Llamaremos \textbf{algoritmo de aproximación} A para un problema de optimización P es una función que dada una instancia $I \in \mathcal{I}$ devuelve una solución factible $A(I) = S \in Sol$. 
+\end{definicion}
+Para los problemas de optimización, se habla de su aproximabilidad en función de un ratio o cociente. Existen dos paradigmas principales a seguir. Para estas definiciones, tomaremos $\omega(I)$ como el valor de la peor solución para la instancia $I$, $m_{A}(I, S)$ como el valor de la solución aproximada $A(I) = S$, que será la solución obtenida por un algoritmo de aproximación $A$ y $opt(I)$ como el valor de la mejor solución para la instancia I:
+\begin{definicion}[Aproximación estándar]
+    La cualidad de un algoritmo de aproximación A viene dada por el cociente $$\rho_{A}(I)=\dfrac{m_{A}(I, S)}{opt(I)}$$
+    Llamamos a $\rho_{A}$ \textbf{ratio de aproximación estándar}.
+\end{definicion}
+\begin{observacion}
+    Nótese que para los problemas de minimización, el ratio de aproximación está en $\left[1, \infty\right)$, mientras que en los problemas de maximización se encuentra en $\left(0, 1\right]$.
+\end{observacion}
+\begin{definicion}[Aproximación diferencial]
+La cualidad de un algoritmo de aproximación A viene dado por el cociente $$\delta_{A}(I)=\dfrac{|\omega(I) - m_{A}(I, S)|}{|\omega(I) - \beta(I)|}$$ 
+Llamamos a $\delta_{A}$ \textbf{ratio de aproximación diferencial}.
+\end{definicion}
+\begin{observacion}
+    El valor del ratio diferencial siempre se encuentra en $\left[0,1\right]$, independientemente de que se trate de un problema de minimización o de maximización.
+\end{observacion}
+
+Existen un gran número de clases de aproximabilidad comprendidas entre $\mathcal{PO}$ y $\mathcal{NPO}$. Además, no existe una relación directa entre las clases de complejidad y las clases de aproximación. Tanto es así que para cada clase de las que hablaremos existe un problema $\mathcal{NP}$-duro que pertenece a esa clase.
+\begin{definicion}
+    Algunas de las clases de aproximabilidad más conocidas son:
+    \begin{itemize}
+        \item[$\bullet$] \textbf{Exp-$\mathcal{APX}$} y \textbf{Exp-$\mathcal{DAPX}$}. Clases de problemas para los que el mejor ratio de aproximación conocido es exponencial respecto al tamaño de la instancia.
+        \item[$\bullet$] 
+        \textbf{Poly-$\mathcal{APX}$} y \textbf{Poly-$\mathcal{DAPX}$}. Clases de problemas para los que el mejor ratio de aproximación conocido es polinómico respecto al tamaño de la instancia.
+            \item[$\bullet$] \textbf{Log-$\mathcal{APX}$} y \textbf{Log-$\mathcal{DAPX}$}. Clases de problemas para los que el mejor ratio de aproximación conocido es logarítmico en alguna base respecto al tamaño de la instancia.
+        \item[$\bullet$] \textbf{$\mathcal{APX}$} y \textbf{$\mathcal{DAPX}$}. A partir de aquí comienzan las clases de aproximación más optimistas. Estas clases corresponden a los problemas cuyo ratio de aproximación es alguna constante fija.
+        \item[$\bullet$] $\mathcal{PTAS}$ y $\mathcal{DPTAS}$. Clases de problemas que admiten un \textbf{esquema de aproximación de tiempo polinomial}. Un esquema de aproximación de tiempo polinomial es una secuencia de algoritmos $A_{\varepsilon}$ que consiguen un ratio de aproximación de $1 + \varepsilon$ para cada $\varepsilon > 0$ o $1 - \varepsilon$ para problemas de maximización y para la versión diferencial. Este ratio puede obtenerse en tiempo polinómico respecto al tamaño de la instancia pero puede llegar a ser exponencial respecto a $1/\varepsilon$.
+        \item[$\bullet$] $\mathcal{FPTAS}$ y $\mathcal{DFPTAS}$. Clases de problemas que admiten un \textbf{esquema de aproximación de tiempo polinómico completo}. Esto significa que además de admitir un esquema de aproximación de tiempo polinómico, también se puede obtener el ratio de aproximación de $1 \pm \varepsilon$ en tiempo polinómico respecto a $1/\varepsilon$.
+        \item[$\bullet$] \textbf{0-$\mathcal{DAPX}$}. Esta clase solo se comprende en el paradigma de la aproximación diferencial. Esta clase incluye los problemas para los que cualquier algoritmo computable en tiempo polinómico devuelve para alguna instancia la peor solución posible. Es decir, que su ratio de aproximación diferencial es 0 para alguna instancia.
+    \end{itemize}
+    Para cada clase de aproximación estándar $C$, $DC$ denota su respectiva clase de aproximación diferencial. Nótese que el ratio de aproximación se toma teniendo en cuenta el peor entre todas las instancias del problema. 
+\end{definicion}
+
+Se tiene la siguiente jerarquía entre las clases anteriores:
+$$\mathcal{PO} \subseteq \mathcal{FPTAS} \subseteq \mathcal{PTAS} \subseteq \mathcal{APX} \subseteq Log-\mathcal{APX} \subseteq Poly-\mathcal{APX} \subseteq Exp-\mathcal{APX} \subseteq \mathcal{NPO}$$
+$$\mathcal{PO} \subseteq \mathcal{DFPTAS} \subseteq \mathcal{DPTAS} \subseteq \mathcal{DAPX} \subseteq Log-\mathcal{DAPX} \subseteq$$ $$\subseteq Poly-\mathcal{DAPX} \subseteq Exp-\mathcal{DAPX} \subseteq \mathcal{NPO}$$
+El hecho de que cualquiera de estas inclusiones sea estricta o no es también objeto de debate. De hecho, si dos de estas clases cualesquiera fuesen iguales se tendría que todas las clases son iguales y, por consiguiente, se tendría que $\mathcal{P} = \mathcal{NP}$.
