@@ -167,7 +167,7 @@ class prot:
                     pb.add_amino(seq[i])
                     self._blocks.append(pb)
                     i += 1
-            else:
+            elif i < len(seq):
                 pb.add_amino(1)
                 if bt == Block_type.X_BLOCK:
                     self._nx += 1
@@ -360,6 +360,22 @@ def algorithmA(p: list[int]) -> list[Directions]:
     
 str_seq = '0101000111100100000001101011000101101001'
 seq = [1, 1, 1, 1, 3, 4, 2, 1, 7, 2, 1, 1, 1, 2, 3, 1, 1, 2, 1, 1, 2, 1, 0]
+res = algorithmA(seq)
+_, _, coord_x, coord_y = prot_coord2D(res, str_seq)
+color = []
+for ch in str_seq:
+    if ch == '1':
+        color.append('black')
+    else:
+        color.append('white')
+plt.plot(coord_x, coord_y, '-', c = 'black', zorder = 1)
+plt.axis('equal')
+plt.scatter(coord_x, coord_y, c = color, s = 100, edgecolors = 'black', zorder = 2)
+plt.grid(color = 'black', linewidth=0.5)
+plt.show()
+
+str_seq = '010111000101000100101011'
+seq = format_seq(str_seq)
 res = algorithmA(seq)
 _, _, coord_x, coord_y = prot_coord2D(res, str_seq)
 color = []
