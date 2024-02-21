@@ -198,6 +198,7 @@ class prot:
             pb = prot_block(Block_type.SEP)
             pb.add_amino(0)
             self._blocks.append(pb)
+        #REVISAR ESTA CONDICION
         if self._nx > self._ny or (self._nx == self._ny and self._blocks[1].getType() != Block_type.X_BLOCK and self._blocks[-2].getType() != Block_type.X_BLOCK):
             for bl in self._blocks:
                 if bl.getType() == Block_type.X_BLOCK:
@@ -318,7 +319,7 @@ def format_seq(str_seq: str) -> list[int]:
         res.append(0)
     return res
 
-def prot_coord2D(dir: list[Directions], seq: str):
+def prot_coord2D(dir: list[Directions]):
     coord_x = [0]
     coord_y = [0]
     ind_to_coord = {0 : [0,0]}
@@ -361,7 +362,7 @@ def algorithmA(p: list[int]) -> list[Directions]:
 str_seq = '0101000111100100000001101011000101101001'
 seq = [1, 1, 1, 1, 3, 4, 2, 1, 7, 2, 1, 1, 1, 2, 3, 1, 1, 2, 1, 1, 2, 1, 0]
 res = algorithmA(seq)
-_, _, coord_x, coord_y = prot_coord2D(res, str_seq)
+_, _, coord_x, coord_y = prot_coord2D(res)
 color = []
 for ch in str_seq:
     if ch == '1':
@@ -376,8 +377,9 @@ plt.show()
 
 str_seq = '010111000101000100101011'
 seq = format_seq(str_seq)
+print(seq)
 res = algorithmA(seq)
-_, _, coord_x, coord_y = prot_coord2D(res, str_seq)
+_, _, coord_x, coord_y = prot_coord2D(res)
 color = []
 for ch in str_seq:
     if ch == '1':
