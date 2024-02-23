@@ -14,50 +14,54 @@ def cond(a, b, A, B) -> bool:
     return a < b or (a == b and A < B)
 
 def subroutine1(p : pts.prot):
+    if len(p.getBlocks()) < 3: 
+        return p, pts.prot([], False), False
     reverse = False
     P1 = []
     P2 = []
     pb = pts.prot_block(pts.Block_type.SEP)
     pb.add_amino(0)
-    if len(p.getBlocks()) > 1:
-        B1 = pts.prot(p.getBlocks()[0:3])
-        B2 = pts.prot([pb] + p.getBlocks()[3:])
+    B1 = pts.prot(p.getBlocks()[0:2] + [pb])
+    sep = p.getBlocks()[2]
+    B2 = pts.prot([pb] + p.getBlocks()[3:])
+    m1 = Mxy(B1, B2)
+    m2 = Myx(B1, B2)
+    M1 = Mxy(B1, B2, False)
+    M2 = Myx(B1, B2, False)
+    if m1 > m2:
+        P1 = B2
+        P2 = B1
+        e = m1
+        E = M1
+        reverse = True
+    else:
+        P1 = B1
+        P2 = B2
+        e = m2
+        E = M2
+        reverse = False
+    for i in range(3, (len(p.getBlocks()) + 1) // 2):
+        B1 = pts.prot(p.getBlocks()[0:2*(i-1)] + [pb])
+        B2 = pts.prot([pb] + p.getBlocks()[(2*i-1):])
         m1 = Mxy(B1, B2)
         m2 = Myx(B1, B2)
         M1 = Mxy(B1, B2, False)
         M2 = Myx(B1, B2, False)
-        if m1 > m2:
+        if cond(e, m1, E, M1):
             P1 = B2
             P2 = B1
             e = m1
             E = M1
             reverse = True
-        else:
+            sep = p.getBlocks()[2*(i-1)]
+        if cond(e, m2, E, M2):
             P1 = B1
             P2 = B2
             e = m2
             E = M2
             reverse = False
-        for i in range(3, ((len(p.getBlocks()) + 1) // 2) + 1):
-            B1 = pts.prot(p.getBlocks()[0:((i * 2) - 1)])
-            B2 = pts.prot([pb] + p.getBlocks()[((i * 2) - 1):])
-            m1 = Mxy(B1, B2)
-            m2 = Myx(B1, B2)
-            M1 = Mxy(B1, B2, False)
-            M2 = Myx(B1, B2, False)
-            if cond(e, m1, E, M1):
-                P1 = B2
-                P2 = B1
-                e = m1
-                E = M1
-                reverse = True
-            if cond(e, m2, E, M2):
-                P1 = B1
-                P2 = B2
-                e = m2
-                E = M2
-                reverse = False
-    return P1, P2, reverse
+            sep = p.getBlocks()[2*(i-1)]
+    return P1, sep, P2, reverse
 
 def format_seq(str_seq: str) -> list[int]:
     next = '0'
@@ -137,12 +141,15 @@ def algorithmA(p: list[int]) -> list[pts.Directions]:
     pb.add_amino(0)
     for _ in range(0, paux.getBlocks()[0].getSize()):
         dir.append(pts.Directions.R)
-    P1, P2, reverse = subroutine1(pts.prot([pb] + paux.getBlocks()[1:-1] + [pb]))
+    P1, sep, P2, reverse = subroutine1(pts.prot([pb] + paux.getBlocks()[1:-1] + [pb]))
     fold1 = P1.fold(pts.Block_type.Y_BLOCK, reverse)
     fold2 = P2.fold(pts.Block_type.X_BLOCK, not reverse)
     union = []
-    if fold1 and fold2:
-        union = [pts.Directions.R]
+    for _ in range(sep.getSize() // 2):
+        union.append(pts.Directions.D)
+    union.append(pts.Directions.R)
+    for _ in range(sep.getSize() // 2):
+        union.append(pts.Directions.U)
     if reverse:
         dir = dir + fold2 + union + fold1
     else:
@@ -154,6 +161,17 @@ def algorithmA(p: list[int]) -> list[pts.Directions]:
 def algorithmB(p: list[int]) -> list[pts.Directions]:
     dir = []
     paux = pts.prot(p, False)
+    pb = pts.prot_block(pts.Block_type.SEP)
+    pb.add_amino(0)
+    for _ in range(0, paux.getBlocks()[0].getSize()):
+        dir.append(pts.Directions.R)
+    P1, P2, reverse = subroutine1(pts.prot([pb] + paux.getBlocks()[1:-1] + [pb]))
+    if reverse:
+        z_i = P2.getBlocks()[-1]
+    else:
+        z_i = P2.getBlocks()[-1]
+    for _ in range(0, paux.getBlocks()[-1].getSize()):
+        dir.append(pts.Directions.U)
     return dir
 
 def algorithmC(p: list[int]) -> list[pts.Directions]:
@@ -191,4 +209,7 @@ str_seq = '0101000111100100000001101011000101101001'
 prot_fold(str_seq, 'A')
 
 str_seq = '0101101001001011101001101001010'
+prot_fold(str_seq, 'A')
+
+str_seq = '00100010001000100100010001000100'
 prot_fold(str_seq, 'A')
