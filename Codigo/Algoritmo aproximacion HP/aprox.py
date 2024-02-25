@@ -140,7 +140,7 @@ def algorithmA(p: list[int]) -> list[pts.Directions]:
     pb = pts.prot_block(pts.Block_type.SEP)
     pb.add_amino(0)
     for _ in range(0, paux.getBlocks()[0].getSize()):
-        dir.append(pts.Directions.R)
+        dir.append(pts.Directions.D)
     P1, sep, P2, reverse = subroutine1(pts.prot([pb] + paux.getBlocks()[1:-1] + [pb]))
     fold1 = P1.fold(pts.Block_type.Y_BLOCK, reverse)
     fold2 = P2.fold(pts.Block_type.X_BLOCK, not reverse)
@@ -162,14 +162,37 @@ def algorithmB(p: list[int]) -> list[pts.Directions]:
     dir = []
     paux = pts.prot(p, False)
     pb = pts.prot_block(pts.Block_type.SEP)
+    z_i = 0
     pb.add_amino(0)
     for _ in range(0, paux.getBlocks()[0].getSize()):
-        dir.append(pts.Directions.R)
+        dir.append(pts.Directions.D)
     P1, P2, reverse = subroutine1(pts.prot([pb] + paux.getBlocks()[1:-1] + [pb]))
     if reverse:
-        z_i = P2.getBlocks()[-1]
+        z_i = P2.getBlocks()[-1].getSize()
     else:
-        z_i = P2.getBlocks()[-1]
+        z_i = P1.getBlocks()[-1].getSize()
+    if P1.Ny() > P2.Nx():
+        if reverse:
+            z_i += P1.del_first_h()
+        else:
+            z_i += P1.del_last_h()
+    elif P1.Ny() < P2.Nx():
+        if reverse:
+            z_i += P2.del_last_h()
+        else:
+            z_i += P2.del_first_h()
+    for _ in range(z_i // 2):
+        dir.append(pts.Directions.D)
+    dir.append(pts.Directions.R)
+    for _ in range(z_i // 2):
+        dir.append(pts.Directions.U)
+    fold1 = P1.fold(pts.Block_type.X_BLOCK, reverse)
+    fold2 = P2.fold(pts.Block_type.Y_BLOCK, not reverse)
+    if P1.Ny() == P2.Nx():
+        if reverse:
+            fold2[0] = pts.Directions.L
+        else:
+            fold1[0] = pts.Directions.L
     for _ in range(0, paux.getBlocks()[-1].getSize()):
         dir.append(pts.Directions.U)
     return dir
@@ -212,4 +235,7 @@ str_seq = '0101101001001011101001101001010'
 prot_fold(str_seq, 'A')
 
 str_seq = '00100010001000100100010001000100'
+prot_fold(str_seq, 'A')
+
+str_seq = '1'
 prot_fold(str_seq, 'A')

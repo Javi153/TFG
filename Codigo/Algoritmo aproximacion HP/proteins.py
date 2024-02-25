@@ -76,13 +76,23 @@ class prot_block:
             dir = []
             for i in range(0, len(self._seq)):
                 if i % 2 == 0 and self._seq[i] == 1:
-                    dir.append(vert)
-                elif self._seq[i] != 0:
-                    for _ in range(0, self._seq[i] // 2):
+                    if reverse:
                         dir.append(hor)
+                    else:
+                        dir.append(vert)
+                elif self._seq[i] != 0:
+                    aux = 0
+                    if reverse:
+                        aux = 1
+                    for _ in range(0, self._seq[i] // 2 - aux):
+                        dir.append(hor)
+                    if reverse and self._seq[i] == 1:
+                        dir.pop()
                     dir.append(vert)
                     for _ in range(0, self._seq[i] // 2):
                         dir.append(hor2)
+                    if reverse:
+                        dir.append(vert)
             return dir
         else:
             return []
@@ -244,16 +254,29 @@ class prot:
         for bl in self._blocks:
             if bl.getType() == ftype:
                 if size > 0:
-                    for _ in range (0, size // 2):
+                    aux = 0
+                    if reverse:
+                        aux = 1
+                    for _ in range (0, (size // 2) - aux):
                         dir.append(hor)
                     dir.append(vert)
                     for _ in range (0, size // 2):
                         dir.append(hor2)
+                    if reverse and size > 1:
+                        dir.append(vert)
                 dir = dir + bl.fold(ftype, reverse)
                 size = 0
             else:
                 size += bl.getSize()
         if size > 0:
-            for _ in range (0, size):
+            aux = 0
+            if reverse:
+                aux = 1
+            for _ in range (0, (size // 2) - aux):
+                dir.append(hor)
+            dir.append(vert)
+            for _ in range (0, size // 2):
+                dir.append(hor2)
+            if reverse and size > 1:
                 dir.append(vert)
         return dir[:-1]
