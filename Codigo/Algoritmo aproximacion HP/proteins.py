@@ -142,7 +142,12 @@ class prot:
             self._nx -= 1
         else:
             self._ny -= 1
-        s += self._blocks[-1].del_last_h()
+        if self._blocks[-1].getN() == 1:
+            s += self._blocks[-1].getSize()
+            self._blocks.pop()
+            aux = False
+        else:
+            s += self._blocks[-1].del_last_h()
         if aux:
             pb = prot_block(Block_type.SEP)
             pb.add_amino(0)
@@ -158,7 +163,12 @@ class prot:
             self._nx -= 1
         else:
             self._ny -= 1
-        s += self._blocks[0].del_first_h()
+        if self._blocks[0].getN() == 1:
+            s += self._blocks[0].getSize()
+            self._blocks.pop(0)
+            aux = False
+        else:
+            s += self._blocks[0].del_first_h()
         if aux:
             pb = prot_block(Block_type.SEP)
             pb.add_amino(0)
@@ -189,7 +199,7 @@ class prot:
                 else:
                     self._ny += 1
                 i += 1
-            while i < len(seq) and ((i % 2 != 0 and seq[i] == 1) or (i % 2 == 0 and seq[i] % 2 != 0)):
+            while i < len(seq) and ((i % 2 != 0 and seq[i] == 1) or (i % 2 == 0 and seq[i] % 2 != 0 and i != len(seq) - 1)):
                 pb.add_amino(seq[i])
                 if i % 2 != 0:
                     if bt == Block_type.X_BLOCK:
