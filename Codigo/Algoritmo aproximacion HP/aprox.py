@@ -262,7 +262,10 @@ def algorithmB(p: list[int]) -> list[pts.Directions]:
                 dir.pop(0)
             for _ in range((post_last_one // 2) - 1):
                 dir.insert(0, pts.Directions.R)
-            dir.insert(0, pts.Directions.D)
+            if post_last_one == 1:
+                dir.insert(0, pts.Directions.L)
+            else:
+                dir.insert(0, pts.Directions.D)
             for _ in range(post_last_one // 2):
                 dir.insert(0, pts.Directions.L)
             for _ in range(pre_last_one):
@@ -277,7 +280,10 @@ def algorithmB(p: list[int]) -> list[pts.Directions]:
                 dir.pop()
             for _ in range((post_last_one // 2) - 1):
                 dir.append(pts.Directions.R)
-            dir.append(pts.Directions.U)
+            if post_last_one == 1:
+                dir.append(pts.Directions.L)
+            else:
+                dir.append(pts.Directions.U)
             for _ in range(post_last_one // 2):
                 dir.append(pts.Directions.L)
             for _ in range(pre_last_one):
@@ -316,20 +322,23 @@ def prot_fold(str_seq: str, algorithm: str):
     return coord
 
     
-str_seq = '0101000111100100000001101011000101101001'
-prot_fold(str_seq, 'A')
+#str_seq = '0101000111100100000001101011000101101001'
+#prot_fold(str_seq, 'A')
 
-str_seq = '0101101001001011101001101001010'
-prot_fold(str_seq, 'A')
+#str_seq = '0101101001001011101001101001010'
+#prot_fold(str_seq, 'A')
 
 str_seq = '0010001000100010001100010001000100'
+prot_fold(str_seq, 'B')
+
+str_seq = '010100010001000100011000100010001010'
 prot_fold(str_seq, 'B')
 
 str_seq = '0100010001000100100010001000100010'
 prot_fold(str_seq, 'B')
 
-str_seq = '0100010001000100010010001000100010'
+str_seq = '010010010001000100010010001000100010'
 prot_fold(str_seq, 'B')
 
-str_seq = '00100010001000100100000001011100'
-prot_fold(str_seq, 'A')
+#str_seq = '00100010001000100100000001011100'
+#prot_fold(str_seq, 'A')
