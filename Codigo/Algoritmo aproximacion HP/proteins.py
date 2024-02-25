@@ -38,29 +38,29 @@ class prot_block:
                 self._num_h -= aux
                 
     def del_last_h(self) -> int:
+        s = 0
         if self._seq:
-            s = 0
             aux = self._seq.pop()
             self._num_aminos -= aux
+            self._num_h -= aux
             s += aux
-            if len(self._seq) %2 != 0:
+            if self._seq:
                 aux = self._seq.pop()
                 self._num_aminos -= aux
                 s += aux
-            self._num_h -= aux
         return s
     
     def del_first_h(self) -> int:
         s = 0
         if self._seq:
-            aux = self._seq.pop()
+            aux = self._seq.pop(0)
             self._num_aminos -= aux
+            self._num_h -= aux
             s += aux
-            if len(self._seq) %2 != 0:
-                aux = self._seq.pop()
+            if self._seq:
+                aux = self._seq.pop(0)
                 self._num_aminos -= aux
                 s += aux
-            self._num_h -= aux
         return s
 
     def fold(self, ftype, reverse = False):
@@ -135,19 +135,34 @@ class prot:
             
     def del_last_h(self) -> int:
         s = 0
-        if self._blocks[-1].getN() <= 1:
-            s = self._blocks[-1].getSize()
+        if self._blocks[-1].getType() == Block_type.SEP:
             self._blocks.pop()
+            aux = True
+        if self._blocks[-1].getType() == Block_type.X_BLOCK:
+            self._nx -= 1
         else:
-            s = self._blocks[-1].del_last_h()
+            self._ny -= 1
+        s += self._blocks[-1].del_last_h()
+        if aux:
+            pb = prot_block(Block_type.SEP)
+            pb.add_amino(0)
+            self._blocks.append(pb)
         return s
             
     def del_first_h(self) -> int:
         s = 0
-        if self._blocks[0].getN() <= 1:
-            s = self._blocks.pop(0)
+        if self._blocks[0].getType() == Block_type.SEP:
+            self._blocks.pop(0)
+            aux = True
+        if self._blocks[0].getType() == Block_type.X_BLOCK:
+            self._nx -= 1
         else:
-            s = self._blocks[0].del_first_h()
+            self._ny -= 1
+        s += self._blocks[0].del_first_h()
+        if aux:
+            pb = prot_block(Block_type.SEP)
+            pb.add_amino(0)
+            self._blocks.insert(0, pb)
         return s
 
     def update_partition(self, seq):
@@ -259,6 +274,9 @@ class prot:
                         aux = 1
                     for _ in range (0, (size // 2) - aux):
                         dir.append(hor)
+                    if size == 1:
+                        dir.pop()
+                        dir.append(vert)
                     dir.append(vert)
                     for _ in range (0, size // 2):
                         dir.append(hor2)
@@ -277,6 +295,8 @@ class prot:
             dir.append(vert)
             for _ in range (0, size // 2):
                 dir.append(hor2)
-            if reverse and size > 1:
+            if reverse:
+                if size == 1:
+                    dir.pop()
                 dir.append(vert)
         return dir[:-1]
