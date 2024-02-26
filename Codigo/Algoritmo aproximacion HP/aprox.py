@@ -234,9 +234,9 @@ def algorithmB(p: list[int]) -> list[pts.Directions]:
         for _ in range(pre_last_one):
             dir.append(pts.Directions.U)
         dir = [pts.Directions.D for _ in range(paux.getBlocks()[0].getSize())] + dir + [pts.Directions.U for _ in range(paux.getBlocks()[-1].getSize())]
-    elif (P1.Ny() - P2.Nx() == 1 and ((reverse and p[-1] == 0) or (not reverse and p[0] == 0))) or (P2.Nx() - P1.Ny() == 1 and ((reverse and p[0] == 0) or (not reverse and p[-1] == 0))):
-        return []
     else:
+        cond = (P1.Ny() - P2.Nx() > 1 and ((reverse and p[0] == 0) or (not reverse and p[-1] == 0))) or (P2.Nx() - P1.Ny() > 1 and ((reverse and p[-1] == 0) or (not reverse and p[0] == 0)))
+        print(cond)
         first = P1
         second = P2
         shorter = P1
@@ -250,8 +250,40 @@ def algorithmB(p: list[int]) -> list[pts.Directions]:
         else:
             hor1 = pts.Directions.L
             hor2 = pts.Directions.R
-        pre_last_one = 0
-        post_last_one = 0
+        last_one = 0
+        second_last_one = 0
+        while abs(P1.Ny() - P2.Nx()) != 1:
+            if shorter == first:
+                aux = second.del_last_h()
+            else:
+                aux = first.del_first_h()
+            second_last_one = last_one
+            last_one += aux
+        if shorter != first:
+            for_counter = range(last_one + 1)
+        else:
+            for_counter = range(len(dir) - 1, len(dir) - last_one - 2, -1)
+        for i in for_counter:
+            if dir[i] == pts.Directions.U:
+                dir[i] = hor2
+            elif dir[i] == hor2:
+                dir[i] = pts.Directions.D
+            elif dir[i] == pts.Directions.D:
+                dir[i] = hor1
+            elif dir[i] == hor1:
+                dir[i] = pts.Directions.U
+        if cond:
+            print(second_last_one)
+            if shorter == first:
+                dir[len(dir) - second_last_one - 1] = pts.Directions.D
+                if second_last_one != len(dir) - 1 and dir[second_last_one + 1] == pts.Directions.U:
+                    dir[second_last_one + 1] = pts.Directions.L
+            else:
+                dir[second_last_one] = pts.Directions.U
+                if second_last_one != 0 and dir[second_last_one + 1] == pts.Directions.D:
+                    dir[second_last_one + 1] = pts.Directions.L
+        dir = [hor1 for _ in range(paux.getBlocks()[0].getSize())] + dir + [hor2 for _ in range(paux.getBlocks()[-1].getSize())]    
+        """
         if shorter != first:
             while P1.Ny() != P2.Nx():
                 aux = first.del_first_h()
@@ -289,6 +321,7 @@ def algorithmB(p: list[int]) -> list[pts.Directions]:
             for _ in range(pre_last_one):
                 dir.append(pts.Directions.L)
         dir = [hor1 for _ in range(paux.getBlocks()[0].getSize())] + dir + [hor2 for _ in range(paux.getBlocks()[-1].getSize())]    
+        """
     return dir
 
 def algorithmC(p: list[int]) -> list[pts.Directions]:
@@ -338,6 +371,12 @@ str_seq = '0100010001000100100010001000100010'
 prot_fold(str_seq, 'B')
 
 str_seq = '010010010001000100010010001000100010'
+prot_fold(str_seq, 'B')
+
+str_seq = '0101000111100100000001101011000101101001'
+prot_fold(str_seq, 'B')
+
+str_seq = '100010001000110001000100010001000100010'
 prot_fold(str_seq, 'B')
 
 #str_seq = '00100010001000100100000001011100'

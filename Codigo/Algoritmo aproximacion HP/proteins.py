@@ -135,44 +135,46 @@ class prot:
             
     def del_last_h(self) -> int:
         s = 0
-        if self._blocks[-1].getType() == Block_type.SEP:
-            self._blocks.pop()
-            aux = True
-        if self._blocks[-1].getType() == Block_type.X_BLOCK:
-            self._nx -= 1
-        else:
-            self._ny -= 1
-        if self._blocks[-1].getN() == 1:
-            s += self._blocks[-1].getSize()
-            self._blocks.pop()
-            aux = False
-        else:
-            s += self._blocks[-1].del_last_h()
-        if aux:
-            pb = prot_block(Block_type.SEP)
-            pb.add_amino(0)
-            self._blocks.append(pb)
+        if self._blocks:
+            if self._blocks[-1].getType() == Block_type.SEP:
+                self._blocks.pop()
+                aux = True
+            if self._blocks[-1].getType() == Block_type.X_BLOCK:
+                self._nx -= 1
+            else:
+                self._ny -= 1
+            if self._blocks[-1].getN() == 1:
+                s += self._blocks[-1].getSize()
+                self._blocks.pop()
+                aux = False
+            else:
+                s += self._blocks[-1].del_last_h()
+            if aux:
+                pb = prot_block(Block_type.SEP)
+                pb.add_amino(0)
+                self._blocks.append(pb)
         return s
             
     def del_first_h(self) -> int:
         s = 0
-        if self._blocks[0].getType() == Block_type.SEP:
-            self._blocks.pop(0)
-            aux = True
-        if self._blocks[0].getType() == Block_type.X_BLOCK:
-            self._nx -= 1
-        else:
-            self._ny -= 1
-        if self._blocks[0].getN() == 1:
-            s += self._blocks[0].getSize()
-            self._blocks.pop(0)
-            aux = False
-        else:
-            s += self._blocks[0].del_first_h()
-        if aux:
-            pb = prot_block(Block_type.SEP)
-            pb.add_amino(0)
-            self._blocks.insert(0, pb)
+        if self._blocks:
+            if self._blocks[0].getType() == Block_type.SEP:
+                self._blocks.pop(0)
+                aux = True
+            if self._blocks[0].getType() == Block_type.X_BLOCK:
+                self._nx -= 1
+            else:
+                self._ny -= 1
+            if self._blocks[0].getN() == 1:
+                s += self._blocks[0].getSize()
+                self._blocks.pop(0)
+                aux = False
+            else:
+                s += self._blocks[0].del_first_h()
+            if aux:
+                pb = prot_block(Block_type.SEP)
+                pb.add_amino(0)
+                self._blocks.insert(0, pb)
         return s
 
     def update_partition(self, seq):
