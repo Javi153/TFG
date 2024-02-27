@@ -1,5 +1,7 @@
 import proteins as pts
 from matplotlib import pyplot as plt
+import math
+from mpl_toolkits import mplot3d
 
 def Mxy(p1: pts.prot, p2: pts.prot, getmin = True) -> int:
     if getmin:
@@ -236,7 +238,6 @@ def algorithmB(p: list[int]) -> list[pts.Directions]:
         dir = [pts.Directions.D for _ in range(paux.getBlocks()[0].getSize())] + dir + [pts.Directions.U for _ in range(paux.getBlocks()[-1].getSize())]
     else:
         cond = (P1.Ny() - P2.Nx() > 1 and ((reverse and p[0] == 0) or (not reverse and p[-1] == 0))) or (P2.Nx() - P1.Ny() > 1 and ((reverse and p[-1] == 0) or (not reverse and p[0] == 0)))
-        print(cond)
         first = P1
         second = P2
         shorter = P1
@@ -273,15 +274,22 @@ def algorithmB(p: list[int]) -> list[pts.Directions]:
             elif dir[i] == hor1:
                 dir[i] = pts.Directions.U
         if cond:
-            print(second_last_one)
             if shorter == first:
                 dir[len(dir) - second_last_one - 1] = pts.Directions.D
                 if second_last_one != len(dir) - 1 and dir[second_last_one + 1] == pts.Directions.U:
                     dir[second_last_one + 1] = pts.Directions.L
+                    for i in range(second_last_one + 2, len(dir)):
+                        if dir[i] == pts.Directions.D:
+                            dir[i] = pts.Directions.L
+                            break
             else:
                 dir[second_last_one] = pts.Directions.U
-                if second_last_one != 0 and dir[second_last_one + 1] == pts.Directions.D:
-                    dir[second_last_one + 1] = pts.Directions.L
+                if second_last_one != 0 and dir[second_last_one - 1] == pts.Directions.D:
+                    dir[second_last_one - 1] = pts.Directions.L
+                    for i in range(second_last_one - 2, -1, -1):
+                        if dir[i] == pts.Directions.U:
+                            dir[i] = pts.Directions.L
+                            break
         dir = [hor1 for _ in range(paux.getBlocks()[0].getSize())] + dir + [hor2 for _ in range(paux.getBlocks()[-1].getSize())]    
         """
         if shorter != first:
@@ -324,33 +332,88 @@ def algorithmB(p: list[int]) -> list[pts.Directions]:
         """
     return dir
 
-def algorithmC(p: list[int]) -> list[pts.Directions]:
+def algorithmC(p: list[int], f) -> list[pts.Directions]:
     dir = []
+    if sum(p) <= 3 or len(p) == 1:
+        for _ in range(sum(p) - 1):
+            dir.append(pts.Directions.R)
+        return dir
+    paux = pts.prot(p, False)
+    pb = pts.prot_block(pts.Block_type.SEP)
+    pb.add_amino(0)
+    P1, sep, P2, reverse = subroutine1(pts.prot([pb] + paux.getBlocks()[1:-1] + [pb]))
+    K = math.floor(f(min(P1.Ny(), P2.Nx())))
+    J = math.floor((min(P1.Ny(), P2.Nx()) - 2 * K + 1) / K)
+    print(K, J)
+    dir.append(pts.Directions.R)
+    for _ in range(sep.getSize() // 2):
+        dir.insert(0, pts.Directions.D)
+        dir.append(pts.Directions.U)
+    first = P1.fold(pts.Block_type.Y_BLOCK, reverse)
+    second = P2.fold(pts.Block_type.X_BLOCK, not reverse)
+    if reverse:
+        first, second = second, first
+    ind = len(first) - 1
+    for t in range(1, K + 1):
+        h = 0
+        while h < 2 * J:
+            if first[ind] == pts.Directions.D:
+                h += 1
+                if t % 2 == 0 and h != 2 * J:
+                    first[ind] = pts.Directions.U
+                if h == 2 * J and t != K:
+                    first[ind] = pts.Directions.B
+            ind -= 1
+    ind = 0
+    for t in range(1, K + 1):
+        h = 0
+        while h < 2 * J:
+            if second[ind] == pts.Directions.U:
+                h += 1
+                if t % 2 == 0 and h != 2 * J:
+                    second[ind] = pts.Directions.D
+                if h == 2 * J and t != K:
+                    second[ind] = pts.Directions.F
+            ind += 1
+    dir = [pts.Directions.D for _ in range(paux.getBlocks()[0].getSize())] + first + dir + second + [pts.Directions.U for _ in range(paux.getBlocks()[-1].getSize())]    
+    print(len([i for i in dir if i == pts.Directions.B]))
     return dir
 
-def prot_fold(str_seq: str, algorithm: str):
+def prot_fold(str_seq: str, algorithm: str, f = None):
     seq = format_seq(str_seq)
     res = []
     if algorithm == 'A':
         res = algorithmA(seq)
     elif algorithm == 'B':
         res = algorithmB(seq)
+    elif algorithm == 'C' and f != None:
+        res = algorithmC(seq, f)
     else:
-        res = algorithmC(seq)
+        print('El algoritmo especificado no existe o no se pasó una función al algoritmo C')
+        return
+    color = []
+    for ch in str_seq:
+        if ch == '1':
+            color.append('black')
+        else:
+            color.append('white')
     if algorithm == 'A' or algorithm == 'B':
         _, _, coord = prot_coord(res)
-        color = []
-        for ch in str_seq:
-            if ch == '1':
-                color.append('black')
-            else:
-                color.append('white')
         coord_x = [t[0] for t in coord]
         coord_y = [t[1] for t in coord] 
         plt.plot(coord_x, coord_y, '-', c = 'black', zorder = 1)
         plt.axis('equal')
         plt.scatter(coord_x, coord_y, c = color, s = 100, edgecolors = 'black', zorder = 2)
         plt.grid(color = 'black', linewidth=0.5)
+        plt.show()
+    else:
+        _, _, coord = prot_coord(res, in3D = True)
+        coord_x = [t[0] for t in coord]
+        coord_y = [t[1] for t in coord] 
+        coord_z = [t[2] for t in coord]
+        ax = plt.axes(projection ='3d')
+        ax.plot3D(coord_x, coord_y, coord_z, c = 'black', zorder = 1)
+        ax.scatter3D(coord_x, coord_y, coord_z, c = color, zorder = 2)
         plt.show()
     return coord
 
@@ -379,5 +442,8 @@ prot_fold(str_seq, 'B')
 str_seq = '100010001000110001000100010001000100010'
 prot_fold(str_seq, 'B')
 
-#str_seq = '00100010001000100100000001011100'
-#prot_fold(str_seq, 'A')
+str_seq = '100010001000110001000100010001000100010100010001000110001000100010001000100010100010001000110001000100010001000100010100010001000110001000100010001000100010'
+prot_fold(str_seq, 'C', math.sqrt)
+
+str_seq = '00100010001000100100000001011100'
+prot_fold(str_seq, 'A')
