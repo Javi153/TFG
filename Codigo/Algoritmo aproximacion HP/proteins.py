@@ -135,9 +135,10 @@ class prot:
             
     def del_last_h(self) -> int:
         s = 0
+        aux = False
         if self._blocks:
             if self._blocks[-1].getType() == Block_type.SEP:
-                s += self._blocks[-1].getSize()
+                self._blocks[-1].getSize()
                 self._blocks.pop()
                 aux = True
             if self._blocks[-1].getType() == Block_type.X_BLOCK:
@@ -158,9 +159,10 @@ class prot:
             
     def del_first_h(self) -> int:
         s = 0
+        aux = False
         if self._blocks:
             if self._blocks[0].getType() == Block_type.SEP:
-                s += self._blocks[0].getSize()
+                self._blocks[0].getSize()
                 self._blocks.pop(0)
                 aux = True
             if self._blocks[0].getType() == Block_type.X_BLOCK:
@@ -177,6 +179,50 @@ class prot:
                 pb = prot_block(Block_type.SEP)
                 pb.add_amino(0)
                 self._blocks.insert(0, pb)
+        return s
+
+    def del_first_from_block(self, t: Block_type):
+        s = 0
+        if self._blocks:
+            while self._blocks and (self._blocks[0].getType() != t or self._blocks[0].getN() == 0):
+                if self._blocks[0].getType() == Block_type.X_BLOCK:
+                    self._nx -= self._blocks[0].getN()
+                elif self._blocks[0].getType() == Block_type.Y_BLOCK:
+                    self._ny -= self._blocks[0].getN()
+                s += self._blocks[0].getSize()
+                self._blocks.pop(0)
+            if self._blocks[0].getN() > 1:
+                s += self.del_first_h()
+            else:
+                for _ in range(4):
+                    if self._blocks[0].getType() == Block_type.X_BLOCK:
+                        self._nx -= self._blocks[0].getN()
+                    elif self._blocks[0].getType() == Block_type.Y_BLOCK:
+                        self._ny -= self._blocks[0].getN()
+                    s += self._blocks[0].getSize()
+                    self._blocks.pop(0)
+        return s
+    
+    def del_last_from_block(self, t: Block_type):
+        s = 0
+        if self._blocks:
+            while self._blocks and (self._blocks[-1].getType() != t or self._blocks[-1].getN() == 0):
+                if self._blocks[-1].getType() == Block_type.X_BLOCK:
+                    self._nx -= self._blocks[-1].getN()
+                elif self._blocks[-1].getType() == Block_type.Y_BLOCK:
+                    self._ny -= self._blocks[-1].getN()
+                s += self._blocks[-1].getSize()
+                self._blocks.pop()
+            if self._blocks[-1].getN() > 1:
+                s += self.del_last_h()
+            else:
+                for _ in range(4):
+                    if self._blocks[-1].getType() == Block_type.X_BLOCK:
+                        self._nx -= self._blocks[-1].getN()
+                    elif self._blocks[-1].getType() == Block_type.Y_BLOCK:
+                        self._ny -= self._blocks[-1].getN()
+                    s += self._blocks[-1].getSize()
+                    self._blocks.pop()
         return s
 
     def update_partition(self, seq):

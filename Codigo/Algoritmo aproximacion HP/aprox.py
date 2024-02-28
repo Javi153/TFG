@@ -344,7 +344,6 @@ def algorithmC(p: list[int], f) -> list[pts.Directions]:
     P1, sep, P2, reverse = subroutine1(pts.prot([pb] + paux.getBlocks()[1:-1] + [pb]))
     K = math.floor(f(min(P1.Ny(), P2.Nx())))
     J = math.floor((min(P1.Ny(), P2.Nx()) - 2 * K + 1) / K)
-    print(K, J)
     dir.append(pts.Directions.R)
     for _ in range(sep.getSize() // 2):
         dir.insert(0, pts.Directions.D)
@@ -363,18 +362,13 @@ def algorithmC(p: list[int], f) -> list[pts.Directions]:
             if first[ind] == pts.Directions.D:
                 h += 1
                 if h % 2 == 0:
-                    aux_y = first_p.Ny()
-                    while(first_p.Ny() == aux_y):
-                        first_p.del_last_h()
+                    first_p.del_last_from_block(pts.Block_type.Y_BLOCK)
                 if t % 2 == 0:
                     first[ind] = pts.Directions.U
                 if h == 2 * J and t != K:
                     ind -= 1
                     if t % 2 != 0:
-                        s = 0
-                        aux_y = first_p.Ny()
-                        while(first_p.Ny() == aux_y):
-                            s += first_p.del_last_h()
+                        s = first_p.del_last_from_block(pts.Block_type.Y_BLOCK)
                         for _ in range(s // 2 - 1):
                             first[ind] = pts.Directions.R
                             ind -= 1
@@ -383,10 +377,7 @@ def algorithmC(p: list[int], f) -> list[pts.Directions]:
                         for _ in range(s // 2):
                             first[ind] = pts.Directions.L
                             ind -= 1
-                        s = 0
-                        aux_y = first_p.Ny()
-                        while(first_p.Ny() == aux_y):
-                            s += first_p.del_last_h()
+                        s = first_p.del_last_from_block(pts.Block_type.Y_BLOCK)
                         for _ in range(s // 2 - 1):
                             first[ind] = pts.Directions.D
                             ind -= 1
@@ -398,9 +389,8 @@ def algorithmC(p: list[int], f) -> list[pts.Directions]:
                         first[ind] = pts.Directions.F
                         ind -= 1
                         s = 0
-                        aux_y = first_p.Ny()
-                        while(first_p.Ny() == aux_y or s <= 2):
-                            s += first_p.del_last_h()
+                        while(s <= 2):
+                            s += first_p.del_last_from_block(pts.Block_type.Y_BLOCK)
                         for _ in range(s // 2 - 2):
                             first[ind] = pts.Directions.L
                             ind -= 1
@@ -412,9 +402,8 @@ def algorithmC(p: list[int], f) -> list[pts.Directions]:
                         first[ind] = pts.Directions.U
                     else:
                         s = 0
-                        aux_y = first_p.Ny()
-                        while first_p.Ny() == aux_y or s <= 2:
-                            s += first_p.del_last_h()
+                        while s <= 2:
+                            s += first_p.del_last_from_block(pts.Block_type.Y_BLOCK)
                         first[ind] = pts.Directions.F
                         ind -= 1
                         for _ in range(s // 2 - 1):
@@ -436,6 +425,10 @@ def algorithmC(p: list[int], f) -> list[pts.Directions]:
         while ind >= 0:
             if first[ind] == pts.Directions.D:
                 first[ind] = pts.Directions.U
+            elif first[ind] == pts.Directions.R:
+                first[ind] = pts.Directions.L
+            elif first[ind] == pts.Directions.L:
+                first[ind] = pts.Directions.R
             ind -= 1
     ind = 0
     h = 0
@@ -444,18 +437,13 @@ def algorithmC(p: list[int], f) -> list[pts.Directions]:
             if second[ind] == pts.Directions.U:
                 h += 1
                 if h % 2 == 0:
-                    aux_x = second_p.Nx()
-                    while(second_p.Nx() == aux_x):
-                        second_p.del_first_h()
+                    second_p.del_first_from_block(pts.Block_type.X_BLOCK)
                 if t % 2 == 0:
                     second[ind] = pts.Directions.D
                 if h == 2 * J and t != K:
                     ind += 1
                     if t % 2 == 0:
-                        s = 0
-                        aux_x = second_p.Nx()
-                        while(second_p.Nx() == aux_x):
-                            s += second_p.del_first_h()
+                        s = second_p.del_first_from_block(pts.Block_type.X_BLOCK)
                         for _ in range(s // 2 - 1):
                             second[ind] = pts.Directions.L
                             ind += 1
@@ -464,10 +452,7 @@ def algorithmC(p: list[int], f) -> list[pts.Directions]:
                         for _ in range(s // 2):
                             second[ind] = pts.Directions.R
                             ind += 1
-                        s = 0
-                        aux_x = second_p.Nx()
-                        while(second_p.Nx() == aux_x):
-                            s += second_p.del_first_h()
+                        s = second_p.del_first_from_block(pts.Block_type.X_BLOCK)
                         for _ in range(s // 2 - 1):
                             second[ind] = pts.Directions.D
                             ind += 1
@@ -479,9 +464,8 @@ def algorithmC(p: list[int], f) -> list[pts.Directions]:
                         second[ind] = pts.Directions.B
                         ind += 1
                         s = 0
-                        aux_x = second_p.Nx()
-                        while(second_p.Nx() == aux_x or s <= 2):
-                            s += second_p.del_first_h()
+                        while s <= 2:
+                            s += second_p.del_first_from_block(pts.Block_type.X_BLOCK)
                         for _ in range(s // 2 - 2):
                             second[ind] = pts.Directions.R
                             ind += 1
@@ -493,9 +477,8 @@ def algorithmC(p: list[int], f) -> list[pts.Directions]:
                         second[ind] = pts.Directions.U
                     else:
                         s = 0
-                        aux_x = second_p.Nx()
-                        while second_p.Nx() == aux_x or s <= 2:
-                            s += second_p.del_first_h()
+                        while s <= 2:
+                            s += second_p.del_first_from_block(pts.Block_type.X_BLOCK)
                         second[ind] = pts.Directions.B
                         ind += 1
                         for _ in range(s // 2 - 1):
@@ -517,6 +500,10 @@ def algorithmC(p: list[int], f) -> list[pts.Directions]:
         while ind < len(second):
             if second[ind] == pts.Directions.U:
                 second[ind] = pts.Directions.D
+            elif second[ind] == pts.Directions.R:
+                second[ind] = pts.Directions.L
+            elif second[ind] == pts.Directions.L:
+                second[ind] = pts.Directions.R
             ind += 1
     dir = [pts.Directions.D for _ in range(paux.getBlocks()[0].getSize())] + first + dir + second + [pts.Directions.U for _ in range(paux.getBlocks()[-1].getSize())]    
     return dir
@@ -586,6 +573,9 @@ str_seq = '100010001000110001000100010001000100010'
 prot_fold(str_seq, 'B')
 
 str_seq = '100010001000110001000100010001000100010100010001000110001000100010001000100010100010001000110001000100010001000100010100010001000110001000100010001000100010'
+prot_fold(str_seq, 'C', math.sqrt)
+
+str_seq = '10010110110010101110101001010110100111010110100001110011010110110010100100111001001001011010100101011010011101011010000111001101011011'
 prot_fold(str_seq, 'C', math.sqrt)
 
 str_seq = '00100010001000100100000001011100'
