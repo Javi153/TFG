@@ -137,6 +137,7 @@ class prot:
         s = 0
         if self._blocks:
             if self._blocks[-1].getType() == Block_type.SEP:
+                s += self._blocks[-1].getSize()
                 self._blocks.pop()
                 aux = True
             if self._blocks[-1].getType() == Block_type.X_BLOCK:
@@ -159,6 +160,7 @@ class prot:
         s = 0
         if self._blocks:
             if self._blocks[0].getType() == Block_type.SEP:
+                s += self._blocks[0].getSize()
                 self._blocks.pop(0)
                 aux = True
             if self._blocks[0].getType() == Block_type.X_BLOCK:

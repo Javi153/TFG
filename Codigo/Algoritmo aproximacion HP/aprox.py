@@ -349,34 +349,176 @@ def algorithmC(p: list[int], f) -> list[pts.Directions]:
     for _ in range(sep.getSize() // 2):
         dir.insert(0, pts.Directions.D)
         dir.append(pts.Directions.U)
+    first_p = P1
+    second_p = P2
     first = P1.fold(pts.Block_type.Y_BLOCK, reverse)
     second = P2.fold(pts.Block_type.X_BLOCK, not reverse)
     if reverse:
+        first_p, second_p = second_p, first_p
         first, second = second, first
     ind = len(first) - 1
+    h = 0
     for t in range(1, K + 1):
-        h = 0
         while h < 2 * J:
             if first[ind] == pts.Directions.D:
                 h += 1
-                if t % 2 == 0 and h != 2 * J:
+                if h % 2 == 0:
+                    aux_y = first_p.Ny()
+                    while(first_p.Ny() == aux_y):
+                        first_p.del_last_h()
+                if t % 2 == 0:
                     first[ind] = pts.Directions.U
                 if h == 2 * J and t != K:
-                    first[ind] = pts.Directions.B
+                    ind -= 1
+                    if t % 2 != 0:
+                        s = 0
+                        aux_y = first_p.Ny()
+                        while(first_p.Ny() == aux_y):
+                            s += first_p.del_last_h()
+                        for _ in range(s // 2 - 1):
+                            first[ind] = pts.Directions.R
+                            ind -= 1
+                        first[ind] = pts.Directions.D
+                        ind -= 1
+                        for _ in range(s // 2):
+                            first[ind] = pts.Directions.L
+                            ind -= 1
+                        s = 0
+                        aux_y = first_p.Ny()
+                        while(first_p.Ny() == aux_y):
+                            s += first_p.del_last_h()
+                        for _ in range(s // 2 - 1):
+                            first[ind] = pts.Directions.D
+                            ind -= 1
+                        first[ind] = pts.Directions.L
+                        ind -= 1
+                        for _ in range(s // 2):
+                            first[ind] = pts.Directions.U
+                            ind -= 1
+                        first[ind] = pts.Directions.F
+                        ind -= 1
+                        s = 0
+                        aux_y = first_p.Ny()
+                        while(first_p.Ny() == aux_y or s <= 2):
+                            s += first_p.del_last_h()
+                        for _ in range(s // 2 - 2):
+                            first[ind] = pts.Directions.L
+                            ind -= 1
+                        first[ind] = pts.Directions.U
+                        ind -= 1
+                        for _ in range(s // 2 - 1):
+                            first[ind] = pts.Directions.R
+                            ind -= 1
+                        first[ind] = pts.Directions.U
+                    else:
+                        s = 0
+                        aux_y = first_p.Ny()
+                        while first_p.Ny() == aux_y or s <= 2:
+                            s += first_p.del_last_h()
+                        first[ind] = pts.Directions.F
+                        ind -= 1
+                        for _ in range(s // 2 - 1):
+                            first[ind] = pts.Directions.R
+                            ind -= 1
+                        first[ind] = pts.Directions.D
+                        ind -= 1
+                        for _ in range(s // 2 - 2):
+                            first[ind] = pts.Directions.L
+                            ind -= 1
+                        first[ind] = pts.Directions.D
+            elif first[ind] == pts.Directions.R and t % 2 == 0:
+                first[ind] = pts.Directions.L
+            elif first[ind] == pts.Directions.L and t % 2 == 0:
+                first[ind] = pts.Directions.R
+            ind -= 1
+        h = 2
+    if K % 2 == 0:
+        while ind >= 0:
+            if first[ind] == pts.Directions.D:
+                first[ind] = pts.Directions.U
             ind -= 1
     ind = 0
+    h = 0
     for t in range(1, K + 1):
-        h = 0
         while h < 2 * J:
             if second[ind] == pts.Directions.U:
                 h += 1
-                if t % 2 == 0 and h != 2 * J:
+                if h % 2 == 0:
+                    aux_x = second_p.Nx()
+                    while(second_p.Nx() == aux_x):
+                        second_p.del_first_h()
+                if t % 2 == 0:
                     second[ind] = pts.Directions.D
                 if h == 2 * J and t != K:
-                    second[ind] = pts.Directions.F
+                    ind += 1
+                    if t % 2 == 0:
+                        s = 0
+                        aux_x = second_p.Nx()
+                        while(second_p.Nx() == aux_x):
+                            s += second_p.del_first_h()
+                        for _ in range(s // 2 - 1):
+                            second[ind] = pts.Directions.L
+                            ind += 1
+                        second[ind] = pts.Directions.D
+                        ind += 1
+                        for _ in range(s // 2):
+                            second[ind] = pts.Directions.R
+                            ind += 1
+                        s = 0
+                        aux_x = second_p.Nx()
+                        while(second_p.Nx() == aux_x):
+                            s += second_p.del_first_h()
+                        for _ in range(s // 2 - 1):
+                            second[ind] = pts.Directions.D
+                            ind += 1
+                        second[ind] = pts.Directions.R
+                        ind += 1
+                        for _ in range(s // 2):
+                            second[ind] = pts.Directions.U
+                            ind += 1
+                        second[ind] = pts.Directions.B
+                        ind += 1
+                        s = 0
+                        aux_x = second_p.Nx()
+                        while(second_p.Nx() == aux_x or s <= 2):
+                            s += second_p.del_first_h()
+                        for _ in range(s // 2 - 2):
+                            second[ind] = pts.Directions.R
+                            ind += 1
+                        second[ind] = pts.Directions.U
+                        ind += 1
+                        for _ in range(s // 2 - 1):
+                            second[ind] = pts.Directions.L
+                            ind += 1
+                        second[ind] = pts.Directions.U
+                    else:
+                        s = 0
+                        aux_x = second_p.Nx()
+                        while second_p.Nx() == aux_x or s <= 2:
+                            s += second_p.del_first_h()
+                        second[ind] = pts.Directions.B
+                        ind += 1
+                        for _ in range(s // 2 - 1):
+                            second[ind] = pts.Directions.L
+                            ind += 1
+                        second[ind] = pts.Directions.D
+                        ind += 1
+                        for _ in range(s // 2 - 2):
+                            second[ind] = pts.Directions.R
+                            ind += 1
+                        second[ind] = pts.Directions.D
+            elif second[ind] == pts.Directions.R and t % 2 == 0:
+                second[ind] = pts.Directions.L
+            elif second[ind] == pts.Directions.L and t % 2 == 0:
+                second[ind] = pts.Directions.R
+            ind += 1
+        h = 2
+    if K % 2 == 0:
+        while ind < len(second):
+            if second[ind] == pts.Directions.U:
+                second[ind] = pts.Directions.D
             ind += 1
     dir = [pts.Directions.D for _ in range(paux.getBlocks()[0].getSize())] + first + dir + second + [pts.Directions.U for _ in range(paux.getBlocks()[-1].getSize())]    
-    print(len([i for i in dir if i == pts.Directions.B]))
     return dir
 
 def prot_fold(str_seq: str, algorithm: str, f = None):
@@ -414,15 +556,16 @@ def prot_fold(str_seq: str, algorithm: str, f = None):
         ax = plt.axes(projection ='3d')
         ax.plot3D(coord_x, coord_y, coord_z, c = 'black', zorder = 1)
         ax.scatter3D(coord_x, coord_y, coord_z, c = color, zorder = 2)
+        plt.axis('equal')
         plt.show()
     return coord
 
     
-#str_seq = '0101000111100100000001101011000101101001'
-#prot_fold(str_seq, 'A')
+str_seq = '0101000111100100000001101011000101101001'
+prot_fold(str_seq, 'A')
 
-#str_seq = '0101101001001011101001101001010'
-#prot_fold(str_seq, 'A')
+str_seq = '0101101001001011101001101001010'
+prot_fold(str_seq, 'A')
 
 str_seq = '0010001000100010001100010001000100'
 prot_fold(str_seq, 'B')
