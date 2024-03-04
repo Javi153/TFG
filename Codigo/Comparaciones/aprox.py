@@ -2,6 +2,7 @@ import proteins as pts
 from matplotlib import pyplot as plt
 import math
 from mpl_toolkits import mplot3d
+import random
 
 def Mxy(p1: pts.prot, p2: pts.prot, getmin = True) -> int:
     if getmin:
@@ -635,5 +636,11 @@ def prot_fold(str_seq: str, algorithm: str, f = None):
 #str_seq = 'PHHPPHHPHHHPHPPHHPPHPPPPPHHHHHHHHHPHHPPHHHPPPPP'
 #prot_fold(str_seq, 'C', math.sqrt)
 
-str_seq = 'PHHHHHPPPPHHPPHHPHHPHHHPHPPH'
-prot_fold(str_seq, 'C', math.sqrt)
+for i in range(100):
+    r = random.randint(20, 70)
+    str_seq = ''
+    for _ in range(r):
+        s = random.choice(['H', 'P'])
+        str_seq += s
+    print('CASO %i: %s' % (i, str_seq))
+    prot_fold(str_seq, 'B')
