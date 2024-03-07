@@ -215,7 +215,7 @@ def genetic(N: int, it: int, p: str):
     return best_ins, best_sol
 
 def protein_fold(p: str):
-    ins, fit = genetic(200, 70, p)
+    ins, fit = genetic(200, 200, p)
     print('El valor obtenido por el algoritmo genético es', fit)
     """color = []
     for ch in p:

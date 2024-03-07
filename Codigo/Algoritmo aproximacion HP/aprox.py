@@ -2,6 +2,7 @@ import proteins as pts
 from matplotlib import pyplot as plt
 import math
 from mpl_toolkits import mplot3d
+import random
 
 def Mxy(p1: pts.prot, p2: pts.prot, getmin = True) -> int:
     if getmin:
@@ -128,6 +129,8 @@ def prot_coord(dir: list[pts.Directions], in3D = False):
             coord_to_ind[(coord_x[-1], coord_y[-1], coord_z[-1])] = i
         else:
             ind_to_coord[i] = (coord_x[-1], coord_y[-1])
+            if coord_to_ind.get((coord_x[-1], coord_y[-1])) != None:
+                print('HAY ELEMENTOS COLINDANTES')
             coord_to_ind[(coord_x[-1], coord_y[-1])] = i
         i += 1
     coord = []
@@ -178,23 +181,25 @@ def algorithmB(p: list[int]) -> list[pts.Directions]:
     z_i = 0
     pb.add_amino(0)
     P1, sep, P2, reverse = subroutine1(pts.prot([pb] + paux.getBlocks()[1:-1] + [pb]))
+    if len(P1.getBlocks()) <= 1 or len(P2.getBlocks()) <= 1:
+        return [pts.Directions.R for _ in range(sum(p) - 1)]
     z_i = sep.getSize()
     if P1.Ny() > P2.Nx() and z_i == 0:
         if reverse:
-            z_i += P1.del_first_h()
+            z_i += P1.del_first_from_block(pts.Block_type.Y_BLOCK)
         else:
-            z_i += P1.del_last_h()
+            z_i += P1.del_last_from_block(pts.Block_type.Y_BLOCK)
     elif P1.Ny() < P2.Nx() and z_i == 0:
         if reverse:
-            z_i += P2.del_last_h()
+            z_i += P2.del_last_from_block(pts.Block_type.X_BLOCK)
         else:
-            z_i += P2.del_first_h()
+            z_i += P2.del_first_from_block(pts.Block_type.X_BLOCK)
     fold1 = P1.fold(pts.Block_type.Y_BLOCK, reverse)
     fold2 = P2.fold(pts.Block_type.X_BLOCK, not reverse)
     union = []
     for _ in range(z_i // 2):
         union.append(pts.Directions.D)
-    if fold1 and fold2:
+    if z_i > 1 or (fold1 or fold2):
         union.append(pts.Directions.R)
     for _ in range(z_i // 2):
         union.append(pts.Directions.U)
@@ -202,49 +207,57 @@ def algorithmB(p: list[int]) -> list[pts.Directions]:
         dir = fold2 + union + fold1
     else:
         dir = fold1 + union + fold2
+    if not fold1 or not fold2:
+        if dir == []:
+            dir = [pts.Directions.R]
+        return [pts.Directions.D for _ in range(paux.getBlocks()[0].getSize())] + dir + [pts.Directions.U for _ in range(paux.getBlocks()[-1].getSize())]
     if P1.Ny() == P2.Nx():
-        first_one = 0
-        pre_last_one = 0
-        post_last_one = 0
-        first_prot = P1
-        last_prot = P2
-        first_type = pts.Block_type.Y_BLOCK
-        last_type = pts.Block_type.X_BLOCK
-        if reverse:
-            first_prot, last_prot, first_type, last_type = last_prot, first_prot, last_type, first_type
-        for bl in first_prot.getBlocks():
-            if bl.getType() != first_type:
-                first_one += bl.getSize()
-            else:
-                break
-        for i in range(len(last_prot.getBlocks()) - 1, -1, -1):
-            if last_prot.getBlocks()[i].getType() != last_type:
-                pre_last_one += last_prot.getBlocks()[i].getSize()
-            else:
-                post_last_one += last_prot.getBlocks()[i].del_last_h()
-                break
-        for _ in range(first_one + 1):
-            dir.pop(0)
-        dir.insert(0, pts.Directions.L)
-        for _ in range(first_one):
-            dir.insert(0, pts.Directions.D)
-        for _ in range(pre_last_one + post_last_one):
-            dir.pop()
-        for _ in range(post_last_one // 2):
+        if P1.Ny() != 1:
+            first_one = 0
+            pre_last_one = 0
+            post_last_one = 0
+            first_prot = P1
+            last_prot = P2
+            first_type = pts.Block_type.Y_BLOCK
+            last_type = pts.Block_type.X_BLOCK
+            if reverse:
+                first_prot, last_prot, first_type, last_type = last_prot, first_prot, last_type, first_type
+            for bl in first_prot.getBlocks():
+                if bl.getType() != first_type:
+                    first_one += bl.getSize()
+                else:
+                    break
+            for i in range(len(last_prot.getBlocks()) - 1, -1, -1):
+                if last_prot.getBlocks()[i].getType() != last_type:
+                    pre_last_one += last_prot.getBlocks()[i].getSize()
+                else:
+                    post_last_one = last_prot.del_last_from_block(last_type) - pre_last_one
+                    break
+            for _ in range(first_one + 1):
+                dir.pop(0)
+            dir.insert(0, pts.Directions.L)
+            for _ in range(first_one):
+                dir.insert(0, pts.Directions.D)
+            for _ in range(pre_last_one + post_last_one):
+                dir.pop()
             dir.append(pts.Directions.R)
-        dir.append(pts.Directions.U)
-        for _ in range((post_last_one // 2) - 1):
-            dir.append(pts.Directions.L)
-        for _ in range(pre_last_one):
-            dir.append(pts.Directions.U)
+            for _ in range(post_last_one // 2 - 1):
+                dir.append(pts.Directions.R)
+            if post_last_one != 1:
+                dir.append(pts.Directions.U)
+            for _ in range(post_last_one // 2 - 1):
+                dir.append(pts.Directions.L)
+            for _ in range(pre_last_one):
+                dir.append(pts.Directions.U)
         dir = [pts.Directions.D for _ in range(paux.getBlocks()[0].getSize())] + dir + [pts.Directions.U for _ in range(paux.getBlocks()[-1].getSize())]
     else:
-        cond = (P1.Ny() - P2.Nx() > 1 and ((reverse and p[0] == 0) or (not reverse and p[-1] == 0))) or (P2.Nx() - P1.Ny() > 1 and ((reverse and p[-1] == 0) or (not reverse and p[0] == 0)))
         first = P1
         second = P2
         shorter = P1
+        first_type = pts.Block_type.Y_BLOCK
+        second_type = pts.Block_type.X_BLOCK
         if reverse:
-            first, second = second, first
+            first, second, first_type, second_type = second, first, second_type, first_type
         if P2.Nx() < P1.Ny():
             shorter = P2
         if shorter == first:
@@ -255,17 +268,31 @@ def algorithmB(p: list[int]) -> list[pts.Directions]:
             hor2 = pts.Directions.R
         last_one = 0
         second_last_one = 0
+        aux = 0
         while abs(P1.Ny() - P2.Nx()) != 1:
             if shorter == first:
-                aux = second.del_last_h()
+                aux = second.del_last_from_block(second_type)
             else:
-                aux = first.del_first_h()
+                aux = first.del_first_from_block(first_type)
             second_last_one = last_one
             last_one += aux
+        if last_one == 0:
+            if shorter == first:
+                for bl in second.getBlocks()[::-1]:
+                    if bl.getType() != second_type:
+                        last_one += bl.getSize()
+                    else:
+                        break
+            else:
+                for bl in first.getBlocks():
+                    if bl.getType() != first_type:
+                        last_one += bl.getSize()
+                    else:
+                        break
         if shorter != first:
-            for_counter = range(last_one + 1)
+            for_counter = range(last_one, -1, -1)
         else:
-            for_counter = range(len(dir) - 1, len(dir) - last_one - 2, -1)
+            for_counter = range(len(dir) - last_one - 1, len(dir))
         for i in for_counter:
             if dir[i] == pts.Directions.U:
                 dir[i] = hor2
@@ -275,23 +302,55 @@ def algorithmB(p: list[int]) -> list[pts.Directions]:
                 dir[i] = hor1
             elif dir[i] == hor1:
                 dir[i] = pts.Directions.U
+        cond = (P1.Ny() - P2.Nx() > 1 and ((reverse and p[0] == 0 and P2.getBlocks()[1].getType() == pts.Block_type.X_BLOCK) or (not reverse and p[-1] == 0 and P2.getBlocks()[-2].getType() == pts.Block_type.X_BLOCK))) or (P2.Nx() - P1.Ny() > 1 and ((reverse and p[-1] == 0 and P1.getBlocks()[-2].getType() == pts.Block_type.Y_BLOCK) or (not reverse and p[0] == 0 and P1.getBlocks()[1].getType() == pts.Block_type.Y_BLOCK)))
         if cond:
+            cont = last_one - second_last_one
             if shorter == first:
-                dir[len(dir) - second_last_one - 1] = pts.Directions.D
-                if second_last_one != len(dir) - 1 and dir[second_last_one + 1] == pts.Directions.U:
-                    dir[second_last_one + 1] = pts.Directions.L
-                    for i in range(second_last_one + 2, len(dir)):
+                for i in range(cont // 2 - 1):
+                    dir[len(dir) - last_one + i] = pts.Directions.U
+                dir[len(dir) - last_one + cont // 2 - 1] = pts.Directions.L
+                for i in range(cont // 2):
+                    dir[len(dir) - last_one + cont // 2 + i] = pts.Directions.D
+                dir[len(dir) - 1 - second_last_one] = pts.Directions.L
+                """dir[len(dir) - second_last_one - 1] = pts.Directions.D
+                if second_last_one != 0 and dir[len(dir) - second_last_one] == pts.Directions.U:
+                    dir[len(dir) - second_last_one] = pts.Directions.L
+                    for i in range(len(dir) - second_last_one + 1, len(dir)):
                         if dir[i] == pts.Directions.D:
                             dir[i] = pts.Directions.L
-                            break
+                            break"""
             else:
-                dir[second_last_one] = pts.Directions.U
+                for i in range(cont // 2):
+                    dir[second_last_one + 1 + i] = pts.Directions.U
+                dir[second_last_one + cont // 2 + 1] = pts.Directions.L
+                for i in range(cont // 2 - 1):
+                    dir[second_last_one + cont // 2 + 2 + i] = pts.Directions.D
+                dir[second_last_one] = pts.Directions.L
+                """dir[second_last_one] = pts.Directions.U
                 if second_last_one != 0 and dir[second_last_one - 1] == pts.Directions.D:
                     dir[second_last_one - 1] = pts.Directions.L
                     for i in range(second_last_one - 2, -1, -1):
                         if dir[i] == pts.Directions.U:
                             dir[i] = pts.Directions.L
-                            break
+                            break"""
+        else:
+            aux = 0
+            if shorter == first:
+                for bl in first.getBlocks():
+                    if bl.getType() != first_type:
+                        aux += bl.getSize()
+                    else:
+                        break
+                for i in range(0, aux):
+                    dir[i] = pts.Directions.R
+            else:
+                for bl in second.getBlocks()[::-1]:
+                    if bl.getType() != second_type:
+                        aux += bl.getSize()
+                    else:
+                        break
+                for i in range(len(dir) - 1, len(dir) - 1 - aux, -1):
+                    dir[i] = pts.Directions.R
         dir = [hor1 for _ in range(paux.getBlocks()[0].getSize())] + dir + [hor2 for _ in range(paux.getBlocks()[-1].getSize())]    
         """
         if shorter != first:
@@ -346,10 +405,8 @@ def algorithmC(p: list[int], f) -> list[pts.Directions]:
     P1, sep, P2, reverse = subroutine1(pts.prot([pb] + paux.getBlocks()[1:-1] + [pb]))
     K = math.floor(f(min(P1.Ny(), P2.Nx())))
     J = math.floor((min(P1.Ny(), P2.Nx()) - 2 * K + 1) / K)
-    print(K, J)
     if K <= 1 or J < 2:
         res = algorithmB(p)
-        print(res)
         return res
     dir.append(pts.Directions.R)
     for _ in range(sep.getSize() // 2):
@@ -523,30 +580,44 @@ def algorithmC(p: list[int], f) -> list[pts.Directions]:
         dir = [pts.Directions.D for _ in range(paux.getBlocks()[0].getSize())] + first + dir + second + [pts.Directions.U for _ in range(paux.getBlocks()[-1].getSize())]            
     return dir
 
-def next_dir(d: pts.Directions, c: tuple[int, int, int]):
-    if d == pts.Directions.U:
-        return (c[0], c[1] + 1, c[2])
-    elif d == pts.Directions.D:
-        return (c[0], c[1] - 1, c[2])
-    elif d == pts.Directions.L:
-        return (c[0] - 1, c[1], c[2])
-    elif d == pts.Directions.R:
-        return (c[0] + 1, c[1], c[2])
-    elif d == pts.Directions.F:
-        return (c[0], c[1], c[2] + 1)
-    elif d == pts.Directions.B:
-        return (c[0], c[1], c[2] - 1)
+def next_dir(d: pts.Directions, c: tuple[int, int, int], in3D = True):
+    if in3D:
+        if d == pts.Directions.U:
+            return (c[0], c[1] + 1, c[2])
+        elif d == pts.Directions.D:
+            return (c[0], c[1] - 1, c[2])
+        elif d == pts.Directions.L:
+            return (c[0] - 1, c[1], c[2])
+        elif d == pts.Directions.R:
+            return (c[0] + 1, c[1], c[2])
+        elif d == pts.Directions.F:
+            return (c[0], c[1], c[2] + 1)
+        elif d == pts.Directions.B:
+            return (c[0], c[1], c[2] - 1)
+    else:
+        if d == pts.Directions.U:
+            return (c[0], c[1] + 1)
+        elif d == pts.Directions.D:
+            return (c[0], c[1] - 1)
+        elif d == pts.Directions.L:
+            return (c[0] - 1, c[1])
+        elif d == pts.Directions.R:
+            return (c[0] + 1, c[1])
 
-def neighbours(c: tuple[int, int, int]) -> list[pts.Directions]:
+def neighbours(c: tuple[int, int, int], in3D = True) -> list[pts.Directions]:
     res = []
-    for d in pts.Directions:
-        res.append(next_dir(d, c))
+    if in3D:
+        for d in pts.Directions:
+            res.append(next_dir(d, c, in3D))
+    else:
+        for d in [dir for dir in pts.Directions if dir != pts.Directions.F and dir != pts.Directions.B]:
+            res.append(next_dir(d, c, in3D))
     return res
 
-def fitness(p: str, ind_to_coor: dict, coor_to_ind: dict) -> int:
+def fitness(p: str, ind_to_coor: dict, coor_to_ind: dict, in3D = True) -> int:
     energy = 0
     for i in range(len(p)):
-        for n in neighbours(ind_to_coor[i]):
+        for n in neighbours(ind_to_coor[i], in3D):
             if coor_to_ind.get(n) != None and coor_to_ind.get(n) > i and coor_to_ind.get(n) - i > 1 and p[i] == 'H' and p[coor_to_ind.get(n)] == 'H':
                 energy += 1
     return energy
@@ -571,25 +642,26 @@ def prot_fold(str_seq: str, algorithm: str, f = None):
         else:
             color.append('white')
     if algorithm == 'A' or algorithm == 'B':
-        _, _, coord = prot_coord(res)
-        coord_x = [t[0] for t in coord]
+        ind_to_coor, coor_to_ind, coord = prot_coord(res)
+        print('El valor obtenido por el algoritmo %s es' % algorithm, fitness(str_seq, ind_to_coor, coor_to_ind, False))
+        """coord_x = [t[0] for t in coord]
         coord_y = [t[1] for t in coord] 
         plt.plot(coord_x, coord_y, '-', c = 'black', zorder = 1)
         plt.axis('equal')
         plt.scatter(coord_x, coord_y, c = color, s = 100, edgecolors = 'black', zorder = 2)
         plt.grid(color = 'black', linewidth=0.5)
-        plt.show()
+        plt.show()"""
     else:
         ind_to_coor, coor_to_ind, coord = prot_coord(res, in3D = True)
         print('El valor obtenido por el algoritmo C es', fitness(str_seq, ind_to_coor, coor_to_ind))
-        coord_x = [t[0] for t in coord]
+        """coord_x = [t[0] for t in coord]
         coord_y = [t[1] for t in coord] 
         coord_z = [t[2] for t in coord]
         ax = plt.axes(projection ='3d')
         ax.plot3D(coord_x, coord_y, coord_z, c = 'black', zorder = 1)
         ax.scatter3D(coord_x, coord_y, coord_z, c = color, zorder = 2)
         plt.axis('equal')
-        plt.show()
+        plt.show()"""
     return coord
 
     
@@ -635,5 +707,10 @@ def prot_fold(str_seq: str, algorithm: str, f = None):
 #str_seq = 'PHHPPHHPHHHPHPPHHPPHPPPPPHHHHHHHHHPHHPPHHHPPPPP'
 #prot_fold(str_seq, 'C', math.sqrt)
 
-str_seq = 'PHHHHHPPPPHHPPHHPHHPHHHPHPPH'
-prot_fold(str_seq, 'C', math.sqrt)
+"""for i in range(100):
+    r = random.randint(1, 50)
+    str_seq = ''
+    for _ in range(r):
+        str_seq += random.choice(['H', 'P'])
+    print("Caso %i: %s" % (i, str_seq))
+    prot_fold(str_seq, 'B')"""

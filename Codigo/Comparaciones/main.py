@@ -4,7 +4,7 @@ import random
 import math
 
 for i in range(100):
-    r = random.randint(20, 70)
+    r = random.randint(4, 50)
     str_seq = ''
     for _ in range(r):
         s = random.choice(['H', 'P'])

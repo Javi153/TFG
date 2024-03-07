@@ -202,6 +202,7 @@ class prot:
                             self._ny -= self._blocks[0].getN()
                         s += self._blocks[0].getSize()
                         self._blocks.pop(0)
+            self._blocks.insert(0, prot_block(Block_type.SEP)) #Si algo explota igual hay que quitar esto
         return s
     
     def del_last_from_block(self, t: Block_type):
@@ -225,6 +226,7 @@ class prot:
                             self._ny -= self._blocks[-1].getN()
                         s += self._blocks[-1].getSize()
                         self._blocks.pop()
+            self._blocks.append(prot_block(Block_type.SEP))
         return s
 
     def update_partition(self, seq):
