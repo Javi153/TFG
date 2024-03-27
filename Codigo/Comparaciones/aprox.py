@@ -91,10 +91,10 @@ def prot_coord(dir: list[pts.Directions], in3D = False):
     coord_y = [0]
     coord_z = [0]
     if in3D:
-        ind_to_coord = {0 : [0,0,0]}
+        ind_to_coord = {0 : (0,0,0)}
         coord_to_ind = {(0,0,0) : 0}
     else:
-        ind_to_coord = {0 : [0,0]}
+        ind_to_coord = {0 : (0,0)}
         coord_to_ind = {(0,0) : 0}
     i = 1
     for d in dir:
@@ -623,7 +623,6 @@ def fitness(p: str, ind_to_coor: dict, coor_to_ind: dict, in3D = True) -> int:
     return energy
 
 def prot_fold(str_seq: str, algorithm: str, f = None):
-    print(str_seq)
     seq = format_seq(str_seq)
     res = []
     if algorithm == 'A':
@@ -644,13 +643,13 @@ def prot_fold(str_seq: str, algorithm: str, f = None):
     if algorithm == 'A' or algorithm == 'B':
         ind_to_coor, coor_to_ind, coord = prot_coord(res)
         print('El valor obtenido por el algoritmo %s es' % algorithm, fitness(str_seq, ind_to_coor, coor_to_ind, False))
-        """coord_x = [t[0] for t in coord]
+        coord_x = [t[0] for t in coord]
         coord_y = [t[1] for t in coord] 
         plt.plot(coord_x, coord_y, '-', c = 'black', zorder = 1)
         plt.axis('equal')
-        plt.scatter(coord_x, coord_y, c = color, s = 100, edgecolors = 'black', zorder = 2)
+        plt.scatter(coord_x, coord_y, c = color, edgecolors = 'black', zorder = 2)
         plt.grid(color = 'black', linewidth=0.5)
-        plt.show()"""
+        plt.show()
     else:
         ind_to_coor, coor_to_ind, coord = prot_coord(res, in3D = True)
         print('El valor obtenido por el algoritmo C es', fitness(str_seq, ind_to_coor, coor_to_ind))

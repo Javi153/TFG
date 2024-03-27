@@ -56,7 +56,7 @@ def initial_population(p: str, cant: int) -> list[tuple[list[Directions], dict, 
                     repetition = 0
                 else:
                     repetition += 1
-                    if repetition > 10:
+                    if repetition > 5:
                         return None
             else:
                 dir[i] = random.choice(neigh)
@@ -97,7 +97,7 @@ def mutation(p: list[Directions], ind_to_coor: dict, coor_to_ind: dict) -> tuple
                 repetition = 0
             else:
                 repetition += 1
-                if repetition > 10:
+                if repetition > 5:
                     return None
             res[i] = random.choice(free_neighbours(ind_to_coor[i], coor_to_ind))
         else:
@@ -106,7 +106,7 @@ def mutation(p: list[Directions], ind_to_coor: dict, coor_to_ind: dict) -> tuple
             i += 1
     return (p, ind_to_coor, coor_to_ind)
 
-def cross(p1: list[Directions], p2: list[Directions]) -> tuple[tuple[list[Directions], dict, dict], tuple[list[Directions], dict, dict]]:
+"""def cross(p1: list[Directions], p2: list[Directions]) -> tuple[tuple[list[Directions], dict, dict], tuple[list[Directions], dict, dict]]:
     cross_point = random.randint(1, len(p1) - 2)
     child1 = [d for d in p1[0:cross_point]] + [d for d in p2[cross_point:]]
     child2 = [d for d in p2[0:cross_point]] + [d for d in p1[cross_point:]]
@@ -129,7 +129,7 @@ def cross(p1: list[Directions], p2: list[Directions]) -> tuple[tuple[list[Direct
                 repetition = 0
             else:
                 repetition += 1
-                if repetition > 10:
+                if repetition > 5:
                     return None, None
             child1[i] = random.choice(free_neighbours(ind_to_coor1[i], coor_to_ind1))
         else:
@@ -149,7 +149,60 @@ def cross(p1: list[Directions], p2: list[Directions]) -> tuple[tuple[list[Direct
                 repetition = 0
             else:
                 repetition += 1
-                if repetition > 10:
+                if repetition > 5:
+                    return None, None
+            child2[i] = random.choice(free_neighbours(ind_to_coor2[i], coor_to_ind2))
+        else:
+            coor_to_ind2[aux_next] = i + 1
+            ind_to_coor2[i + 1] = aux_next
+            i += 1
+    return (child1, ind_to_coor1, coor_to_ind1), (child2, ind_to_coor2, coor_to_ind2)"""
+
+def cross(p1: list[Directions], p2: list[Directions]) -> tuple[tuple[list[Directions], dict, dict], tuple[list[Directions], dict, dict]]:
+    cross_point = random.randint(1, len(p1) - 2)
+    cross_point_2 = random.randint(cross_point, len(p1) - 2)
+    child1 = [d for d in p1[0:cross_point]] + [d for d in p2[cross_point:cross_point_2]] + [d for d in p1[cross_point_2:]]
+    child2 = [d for d in p2[0:cross_point]] + [d for d in p1[cross_point:cross_point_2]] + [d for d in p2[cross_point_2:]]
+    ind_to_coor1 = {0 : (0,0,0)}
+    ind_to_coor2 = {0 : (0,0,0)}
+    coor_to_ind1 = {(0,0,0) : 0}
+    coor_to_ind2 = {(0,0,0) : 0}
+    i = 0
+    repetition = -1
+    i_repeat = -1
+    while i < len(p1):
+        aux_next = next_dir(child1[i], ind_to_coor1[i])
+        if coor_to_ind1.get(aux_next) != None:
+            if not free_neighbours(ind_to_coor1[i], coor_to_ind1):
+                coor_to_ind1.pop(ind_to_coor1[i])
+                ind_to_coor1.pop(i)
+                i -= 1
+            if i_repeat != i:
+                i_repeat = i
+                repetition = 0
+            else:
+                repetition += 1
+                if repetition > 5:
+                    return None, None
+            child1[i] = random.choice(free_neighbours(ind_to_coor1[i], coor_to_ind1))
+        else:
+            coor_to_ind1[aux_next] = i + 1
+            ind_to_coor1[i + 1] = aux_next
+            i += 1
+    i = 0
+    while i < len(p1):
+        aux_next = next_dir(child2[i], ind_to_coor2[i])
+        if coor_to_ind2.get(aux_next) != None:
+            if not free_neighbours(ind_to_coor2[i], coor_to_ind2):
+                coor_to_ind2.pop(ind_to_coor2[i])
+                ind_to_coor2.pop(i)
+                i -= 1
+            if i_repeat != i:
+                i_repeat = i
+                repetition = 0
+            else:
+                repetition += 1
+                if repetition > 5:
                     return None, None
             child2[i] = random.choice(free_neighbours(ind_to_coor2[i], coor_to_ind2))
         else:
@@ -183,6 +236,8 @@ def genetic(N: int, it: int, p: str):
             else:
                 to_cross.append(parent2)
                 new_pop.append(parent1)
+        if len(to_cross) % 2 == 1:
+            new_pop.append(to_cross.pop())
         for i in range(0, len(to_cross), 2):
             if i + 1 >= len(to_cross):
                 break
@@ -205,8 +260,14 @@ def genetic(N: int, it: int, p: str):
                 while aux == None:
                     aux = mutation(child2[0], child2[1], child2[2])
                 child2 = aux
-            new_pop.append(child1)
-            new_pop.append(child2)
+            if fitness(p, to_cross[i][1], to_cross[i][2]) < fitness(p, child1[1], child1[2]):
+                new_pop.append(child1)
+            else:
+                new_pop.append(to_cross[i])
+            if fitness(p, to_cross[i+1][1], to_cross[i+1][2]) < fitness(p, child2[1], child2[2]):
+                new_pop.append(child2)
+            else:
+                new_pop.append(to_cross[i+1])
         population = new_pop
     aux_sol = max(pop_fitness)
     if aux_sol > best_sol:
@@ -215,7 +276,7 @@ def genetic(N: int, it: int, p: str):
     return best_ins, best_sol
 
 def protein_fold(p: str):
-    ins, fit = genetic(200, 200, p)
+    ins, fit = genetic(100, 200, p)
     print('El valor obtenido por el algoritmo genético es', fit)
     """color = []
     for ch in p:
