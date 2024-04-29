@@ -1,0 +1,16 @@
+HCore(4,4)           = (4,4)
+currently invalid    = false
+valid after filling  = true
+points should be     = (0,0,0) (1,0,0) (1,1,0) (1,2,0)
+       and are       = (0	0	0) (1	0	0) (1	1	0) (1	2	0)
+center (0,1,0)       = 0	1	0
+LatticeFrame(cub,10) = (cub,10)
+frame center (5,5,5) = (5	5	5)
+shiftet core positions (to frame center) = 
+	 (5	4	5) (6	4	5) (6	5	5) (6	6	5)
+P-Singlets (5,5,5)   =  (5	5	5)
+H-Singlet number (4) = 4
+max Dimension    (3) = 3
+min Even/Odd     (2) = 2
+reset(0,1) + (1,1,1) = ok
+hull 2 elems    (24) = 24

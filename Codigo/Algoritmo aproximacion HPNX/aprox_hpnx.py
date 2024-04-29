@@ -96,7 +96,7 @@ def aproxHPNX(p: str):
     pb = pts.prot_block(pts.Block_type.SEP)
     pb.add_amino(0)
     for _ in range(0, paux.getBlocks()[0].getSize()):
-        dir.append(pts.Directions.R)
+        dir.append(pts.Directions.D)
     P1, sep, P2, reverse = subroutine1(pts.prot([pb] + paux.getBlocks()[1:-1] + [pb]))
     if len(P1.getBlocks()) <= 1 or len(P2.getBlocks()) <= 1:
         return [pts.Directions.R for _ in range(len(p) - 1)]
@@ -114,7 +114,7 @@ def aproxHPNX(p: str):
     fold2 = list(map(lambda num: num + acum, fold2))
     if fold1[0] != paux.getBlocks()[0].getSize():
         for _ in range(fold1[0] - paux.getBlocks()[0].getSize()):
-            dir.append(pts.Directions.R)
+            dir.append(pts.Directions.D)
     left_central = [pts.Directions.D for _ in range(2 * len(fold1) - 1)]
     right_central = [pts.Directions.U for _ in range(2 * len(fold2) - 1)]
     left_laterals_ind = []
@@ -210,12 +210,12 @@ def aproxHPNX(p: str):
             dir.append(pts.Directions.U)
     for _ in range(0, paux.getBlocks()[-1].getSize()):
         dir.append(pts.Directions.U)
-    print(fold1, len(fold1))
+    """print(fold1, len(fold1))
     print(fold2, len(fold2))
     print(paux.getBlocks()[0]._seq)
     print(paux.getBlocks()[-1]._seq)
     print(sep.getSize())
-    print(len(p), len(dir))
+    print(len(p), len(dir))"""
     return dir
 
 def prot_coord(dir: list[pts.Directions], in3D = False):

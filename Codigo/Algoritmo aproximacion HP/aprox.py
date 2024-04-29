@@ -3,6 +3,8 @@ from matplotlib import pyplot as plt
 import math
 from mpl_toolkits import mplot3d
 import random
+import pandas as pd
+import numpy as np
 
 def Mxy(p1: pts.prot, p2: pts.prot, getmin = True) -> int:
     if getmin:
@@ -664,7 +666,32 @@ def prot_fold(str_seq: str, algorithm: str, f = None):
         plt.show()"""
     return coord
 
+def trans_amino(amino: str) -> str:
+    if amino in {"GLY", "ALA", "VAL", "LEU", "ILE", "MET", "PHE", "TRP", "PRO", "G", "A", "V", "L", "I", "M", "F", "W", "P"}:
+        return 'H'
+    else:
+        return 'P'
     
+data_file = open("prueba.txt",'r')
+for line in data_file:
+    data = line.split()
+
+str_seq = ''
+for item in data:
+    str_seq += trans_amino(item)
+
+aux = prot_fold(str_seq, 'C', math.sqrt)
+
+result = open("result.txt", 'w')
+result.write("MOLECULE algo\n")
+i = 1
+for coord in aux:
+    result.write("ATOM %6i  CA %s A %4i     %6.3f  %6.3f  %6.3f  1.00  0.00  C\n" % (i, data[i-1], i, coord[0], coord[1], coord[2]))
+    i += 1
+result.write("END")
+result.close()
+data_file.close()
+
 #str_seq = 'PHPHPPPHHHHPPHPPPPPPPHHPHPHHPPPHPHHPHPPH'
 #prot_fold(str_seq, 'A')
 

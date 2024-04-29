@@ -1,0 +1,186 @@
+/* gecode/support/config.hpp.in.  Generated from configure.ac by autoheader.  */
+
+/* Whether to build with default memory allocator */
+#undef GECODE_ALLOCATOR
+
+/* Whether to include audit code */
+#undef GECODE_AUDIT
+
+/* User-defined prefix of dll names */
+#undef GECODE_DLL_USERPREFIX
+
+/* User-defined suffix of dll names */
+#undef GECODE_DLL_USERSUFFIX
+
+/* Supported version of FlatZinc */
+#undef GECODE_FLATZINC_VERSION
+
+/* Whether gcc understands visibility attributes */
+#undef GECODE_GCC_HAS_CLASS_VISIBILITY
+
+/* whether __builtin_ffsll is available */
+#undef GECODE_HAS_BUILTIN_FFSLL
+
+/* whether __builtin_popcountll is available */
+#undef GECODE_HAS_BUILTIN_POPCOUNTLL
+
+/* Whether counting-based search support available */
+#undef GECODE_HAS_CBS
+
+/* Whether CPProfiler support available */
+#undef GECODE_HAS_CPPROFILER
+
+/* Whether to build FLOAT variables */
+#undef GECODE_HAS_FLOAT_VARS
+
+/* Whether Gist is available */
+#undef GECODE_HAS_GIST
+
+/* Whether GNU hash_map is available */
+#undef GECODE_HAS_GNU_HASH_MAP
+
+/* Whether to build INT variables */
+#undef GECODE_HAS_INT_VARS
+
+/* Whether MPFR is available */
+#undef GECODE_HAS_MPFR
+
+/* Whether we have mtrace for memory leak debugging */
+#undef GECODE_HAS_MTRACE
+
+/* Whether Qt is available */
+#undef GECODE_HAS_QT
+
+/* Whether to build SET variables */
+#undef GECODE_HAS_SET_VARS
+
+/* Whether unistd.h is available */
+#undef GECODE_HAS_UNISTD_H
+
+/* Whether unordered_map is available */
+#undef GECODE_HAS_UNORDERED_MAP
+
+/* Gecode version */
+#undef GECODE_LIBRARY_VERSION
+
+/* Heap memory alignment */
+#undef GECODE_MEMORY_ALIGNMENT
+
+/* How to check allocation size */
+#undef GECODE_MSIZE
+
+/* Whether to track peak heap size */
+#undef GECODE_PEAKHEAP
+
+/* Whether we need malloc.h */
+#undef GECODE_PEAKHEAP_MALLOC_H
+
+/* Whether we need malloc/malloc.h */
+#undef GECODE_PEAKHEAP_MALLOC_MALLOC_H
+
+/* Whether we are compiling static libraries */
+#undef GECODE_STATIC_LIBS
+
+/* Whether we have Mac OS threads */
+#undef GECODE_THREADS_OSX
+
+/* Whether we have Mac OS threads (new version) */
+#undef GECODE_THREADS_OSX_UNFAIR
+
+/* Whether we have posix threads */
+#undef GECODE_THREADS_PTHREADS
+
+/* Whether we have posix spinlocks */
+#undef GECODE_THREADS_PTHREADS_SPINLOCK
+
+/* Whether we have windows threads */
+#undef GECODE_THREADS_WINDOWS
+
+/* Use clock() for time-measurement */
+#undef GECODE_USE_CLOCK
+
+/* Use gettimeofday for time-measurement */
+#undef GECODE_USE_GETTIMEOFDAY
+
+/* Gecode version */
+#undef GECODE_VERSION
+
+/* Gecode version */
+#undef GECODE_VERSION_NUMBER
+
+/* Define to 1 if you have the `getpagesize' function. */
+#undef HAVE_GETPAGESIZE
+
+/* Define to 1 if you have the <gmp.h> header file. */
+#undef HAVE_GMP_H
+
+/* Define to 1 if you have the <inttypes.h> header file. */
+#undef HAVE_INTTYPES_H
+
+/* Define to 1 if you have the <malloc.h> header file. */
+#undef HAVE_MALLOC_H
+
+/* Define to 1 if you have the <malloc/malloc.h> header file. */
+#undef HAVE_MALLOC_MALLOC_H
+
+/* Define to 1 if you have a working `mmap' system call. */
+#undef HAVE_MMAP
+
+/* Define to 1 if you have the <mpfr.h> header file. */
+#undef HAVE_MPFR_H
+
+/* Define to 1 if you have the <stdint.h> header file. */
+#undef HAVE_STDINT_H
+
+/* Define to 1 if you have the <stdio.h> header file. */
+#undef HAVE_STDIO_H
+
+/* Define to 1 if you have the <stdlib.h> header file. */
+#undef HAVE_STDLIB_H
+
+/* Define to 1 if you have the <strings.h> header file. */
+#undef HAVE_STRINGS_H
+
+/* Define to 1 if you have the <string.h> header file. */
+#undef HAVE_STRING_H
+
+/* Define to 1 if you have the <sys/param.h> header file. */
+#undef HAVE_SYS_PARAM_H
+
+/* Define to 1 if you have the <sys/stat.h> header file. */
+#undef HAVE_SYS_STAT_H
+
+/* Define to 1 if you have the <sys/types.h> header file. */
+#undef HAVE_SYS_TYPES_H
+
+/* Define to 1 if you have the <unistd.h> header file. */
+#undef HAVE_UNISTD_H
+
+/* Define to the address where bug reports for this package should be sent. */
+#undef PACKAGE_BUGREPORT
+
+/* Define to the full name of this package. */
+#undef PACKAGE_NAME
+
+/* Define to the full name and version of this package. */
+#undef PACKAGE_STRING
+
+/* Define to the one symbol short name of this package. */
+#undef PACKAGE_TARNAME
+
+/* Define to the home page for this package. */
+#undef PACKAGE_URL
+
+/* Define to the version of this package. */
+#undef PACKAGE_VERSION
+
+/* The size of `int', as computed by sizeof. */
+#undef SIZEOF_INT
+
+/* Define to 1 if all of the C90 standard headers exist (not just the ones
+   required in a freestanding environment). This macro is provided for
+   backward compatibility; new code need not use it. */
+#undef STDC_HEADERS
+
+/* How to tell the compiler to really, really inline */
+#undef forceinline

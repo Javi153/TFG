@@ -1,0 +1,5 @@
+file based database
+
+LatticeDescriptor = ld = cub
+db.initCoreAccess(ld,6,5,7) = (6,5,7)
+number of valid cores with <= 6 contacts (21) = 21

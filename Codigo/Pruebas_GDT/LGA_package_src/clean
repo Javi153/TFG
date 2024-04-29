@@ -1,0 +1,5 @@
+rm -rf MOL2 RESULTS TMP Summary_LGA* TEST.reproduce_results_reported_in_PDBspheres.COVID19_PL2pro.protein_ligand_summary.txt
+mkdir MOL2 RESULTS TMP
+
+rm -rf PDBspheres/PDBspheresLibrary.list PDBspheres/PDBspheresLibrary/* 
+

@@ -1,0 +1,58 @@
+
+#      Molecule1      Molecule2  DISTANCE
+LGA    Y     2_A      Y     2_A     0.000
+LGA    R     3_A      R     3_A     0.000
+LGA    K     4_A      K     4_A     0.000
+LGA    I     5_A      I     5_A     0.000
+LGA    L     6_A      L     6_A     0.000
+LGA    R     7_A      R     7_A     0.000
+LGA    Q     8_A      Q     8_A     0.000
+LGA    R     9_A      R     9_A     0.000
+LGA    K    10_A      K    10_A     0.000
+LGA    I    11_A      I    11_A     0.000
+LGA    D    12_A      D    12_A     0.000
+LGA    R    13_A      R    13_A     0.000
+LGA    L    14_A      L    14_A     0.000
+LGA    I    15_A      I    15_A     0.000
+LGA    D    16_A      D    16_A     0.000
+LGA    R    17_A      R    17_A     0.000
+LGA    L    18_A      L    18_A     0.000
+LGA    I    19_A      I    19_A     0.000
+LGA    E    20_A      E    20_A     0.000
+LGA    R    21_A      R    21_A     0.000
+LGA    A    22_A      A    22_A     0.000
+LGA    E    23_A      E    23_A     0.000
+LGA    D    24_A      D    24_A     0.000
+LGA    S    25_A      S    25_A     0.000
+LGA    G    26_A      G    26_A     0.000
+LGA    N    27_A      N    27_A     0.000
+LGA    E    28_A      E    28_A     0.000
+LGA    S    29_A      S    29_A     0.000
+LGA    E    30_A      E    30_A     0.000
+LGA    G    31_A      G    31_A     0.000
+LGA    E    32_A      E    32_A     0.000
+LGA    I    33_A      I    33_A     0.000
+LGA    S    34_A      S    34_A     0.000
+LGA    A    35_A      A    35_A     0.000
+LGA    L    36_A      L    36_A     0.000
+LGA    V    37_A      V    37_A     0.000
+LGA    E    38_A      E    38_A     0.000
+LGA    L    39_A      L    39_A     0.000
+LGA    G    40_A      G    40_A     0.000
+LGA    V    41_A      V    41_A     0.000
+LGA    E    42_A      E    42_A     0.000
+LGA    L    43_A      L    43_A     0.000
+LGA    G    44_A      G    44_A     0.000
+LGA    H    45_A      H    45_A     0.000
+LGA    H    46_A      H    46_A     0.000
+LGA    A    47_A      A    47_A     0.000
+LGA    P    48_A      P    48_A     0.000
+LGA    W    49_A      W    49_A     0.000
+LGA    D    50_A      D    50_A     0.000
+LGA    V    51_A      V    51_A     0.000
+LGA    D    52_A      D    52_A     0.000
+LGA    D    53_A      D    53_A     0.000
+LGA    L    54_A      L    54_A     0.000
+
+#CA            N1   N2   DIST      N    RMSD    GDT_TS    LGA_S3    GDT_HA   Seq_Id 
+SUMMARY(GDT)   53   54    5.0     53    0.00    98.148    98.148    98.148   100.00

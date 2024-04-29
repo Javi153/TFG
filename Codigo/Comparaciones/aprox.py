@@ -4,6 +4,9 @@ import math
 from mpl_toolkits import mplot3d
 import random
 
+def f(x: float) -> float:
+    return 11.0 * math.sqrt(x) / 18.0
+
 def Mxy(p1: pts.prot, p2: pts.prot, getmin = True) -> int:
     if getmin:
         return min(p1.Nx(), p2.Ny())
@@ -403,7 +406,7 @@ def algorithmC(p: list[int], f) -> list[pts.Directions]:
     pb = pts.prot_block(pts.Block_type.SEP)
     pb.add_amino(0)
     P1, sep, P2, reverse = subroutine1(pts.prot([pb] + paux.getBlocks()[1:-1] + [pb]))
-    K = math.floor(f(min(P1.Ny(), P2.Nx())))
+    K = max(math.floor(f(min(P1.Ny(), P2.Nx()))), 1)
     J = math.floor((min(P1.Ny(), P2.Nx()) - 2 * K + 1) / K)
     if K <= 1 or J < 2:
         res = algorithmB(p)
@@ -642,7 +645,8 @@ def prot_fold(str_seq: str, algorithm: str, f = None):
             color.append('white')
     if algorithm == 'A' or algorithm == 'B':
         ind_to_coor, coor_to_ind, coord = prot_coord(res)
-        print('El valor obtenido por el algoritmo %s es' % algorithm, fitness(str_seq, ind_to_coor, coor_to_ind, False))
+        fitn = fitness(str_seq, ind_to_coor, coor_to_ind, False)
+        print('El valor obtenido por el algoritmo %s es %i' % (algorithm, fitn))
         coord_x = [t[0] for t in coord]
         coord_y = [t[1] for t in coord] 
         plt.plot(coord_x, coord_y, '-', c = 'black', zorder = 1)
@@ -652,7 +656,8 @@ def prot_fold(str_seq: str, algorithm: str, f = None):
         plt.show()
     else:
         ind_to_coor, coor_to_ind, coord = prot_coord(res, in3D = True)
-        print('El valor obtenido por el algoritmo C es', fitness(str_seq, ind_to_coor, coor_to_ind))
+        fitn = fitness(str_seq, ind_to_coor, coor_to_ind)
+        print('El valor obtenido por el algoritmo C es', fitn)
         """coord_x = [t[0] for t in coord]
         coord_y = [t[1] for t in coord] 
         coord_z = [t[2] for t in coord]
@@ -661,7 +666,7 @@ def prot_fold(str_seq: str, algorithm: str, f = None):
         ax.scatter3D(coord_x, coord_y, coord_z, c = color, zorder = 2)
         plt.axis('equal')
         plt.show()"""
-    return coord
+    return coord, fitn
 
     
 #str_seq = 'PHPHPPPHHHHPPHPPPPPPPHHPHPHHPPPHPHHPHPPH'

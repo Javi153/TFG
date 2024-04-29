@@ -1,0 +1,71 @@
+/*
+ *  Main authors:
+ *     Martin Mann http://www.bioinf.uni-freiburg.de/~mmann/
+ *
+ *  Contributing authors:
+ *     Sebastian Will http://www.bioinf.uni-freiburg.de/~will/
+ *
+ *  Copyright:
+ *     Martin Mann, 2007
+ *
+ *  This file is part of the CPSP-tools package:
+ *     http://www.bioinf.uni-freiburg.de/sw/cpsp/
+ *
+ *  See the file "LICENSE" for information on usage and
+ *  redistribution of this file, and for a
+ *     DISCLAIMER OF ALL WARRANTIES.
+ *
+ */
+
+#include "cpsp/gecode/GC_ThreadingSuperSpace.hh"
+
+namespace cpsp {
+  namespace gecode {
+
+	template<class VS>
+	inline
+	Gecode::ViewSelStatus
+	GC_RankViewSel<VS>::init(const Gecode::Space* home, const IdxIntView&x)
+	{
+		rank = INT_MAX;
+		const SuperSpace* ts = dynamic_cast<const SuperSpace*>(home);
+		if (ts != NULL) {
+			rank = ts->getRank(x.getIndex());
+		}
+		return vs.init(home,x);
+	}
+
+
+	template<class VS>
+	inline
+	Gecode::ViewSelStatus
+	GC_RankViewSel<VS>::select(const Gecode::Space* home, IdxIntView x) {
+		if (rank != INT_MAX) {
+			const SuperSpace* ts = dynamic_cast<const SuperSpace*>(home);
+			unsigned int act = INT_MAX;
+			if (ts != NULL)  {
+				// asking the space for the rank of view x by its index
+				act = ts->getRank(x.getIndex());
+			}
+			if ( act < rank ) {
+				rank = act;
+				if (rank == 0) {
+					Gecode::ViewSelStatus ret = vs.select(home,x);
+					return (ret == Gecode::VSS_COMMIT) ? ret : Gecode::VSS_SELECT;
+				} else {
+					return Gecode::VSS_SELECT;
+				}
+			} else if ( act == rank ) {
+				Gecode::ViewSelStatus ret = vs.select(home,x);
+				return (ret != Gecode::VSS_NONE) ? Gecode::VSS_SELECT : Gecode::VSS_NONE;
+			}
+		} else {
+			return vs.select(home,x);
+		}
+		 // never reached
+		return Gecode::VSS_NONE;
+	}
+
+  }
+}
+

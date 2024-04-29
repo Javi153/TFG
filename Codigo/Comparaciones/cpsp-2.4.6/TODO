@@ -1,0 +1,9 @@
+
+	*) ternary lattice neighboring constraints -> check for better : binary/ternary
+	*) extension of tests
+	*) comment translation to english
+	*) documenation check and online
+	*) H-core database online
+	*) 2 independent distinct constraints for Ps and Hs
+	*) binary neighboring constraint with variable pruning threshold -> check for optimal threshold
+	*) CUB : use parity information for domain initialization

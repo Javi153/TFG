@@ -4,27 +4,26 @@ import random
 import math
 import time
 
-file = open("result.txt", "w")
-res_apx = [0] * 100
-res_gen = [0] * 100
-time_apx = [0] * 100
-time_gen = [0] * 100
-for i in range(100):
-    r = random.randint(500, 1000)
-    str_seq = ''
-    for _ in range(r):
-        s = random.choice(['H', 'P'])
-        str_seq += s
-    print('CASO %i: %s' % (i, str_seq))
+file = open("result7.txt", "w")
+#filein = open("ejemplos.txt", "r")
+res_apx = [0] * 200
+res_gen = [0] * 200
+time_apx = [0] * 200
+time_gen = [0] * 200
+for i in range(200):
+    #str_seq = filein.readline()[:-1]
+    #print('CASO %i: %s' % (i, str_seq))
+    str_seq = ''.join([random.choice(['H', 'P']) for _ in range(random.randint(200, 500))])
     inicio = time.time()
     fin = 0
-    res_apx[i] = apx.prot_fold(str_seq, 'C', math.sqrt)
+    _, res_apx[i] = apx.prot_fold(str_seq, 'C', apx.f)
     fin = time.time()
     time_apx[i] = fin - inicio
     inicio = time.time()
     res_gen[i] = ghp.protein_fold(str_seq)
     fin = time.time()
     time_gen[i] = fin - inicio
+#filein.close()
 file.write("Resultado de aproximado: ")
 file.write(' '.join(str(i) for i in res_apx))
 file.write("\nTiempo de aproximado: ")

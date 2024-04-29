@@ -1,0 +1,29 @@
+
+#      Molecule1      Molecule2  DISTANCE
+LGA    X     1_A      X     1_B     3.086
+LGA    X     2_A      X     2_B     3.027
+LGA    X     3_A      X     3_B     2.689
+LGA    X     4_A      X     4_B     2.704
+LGA    X     5_A      X     5_B     2.430
+LGA    X     6_A      X     6_B     3.419
+LGA    X     7_A      X     7_B     2.959
+LGA    X     8_A      X    49_B     1.235
+LGA    X     9_A      X    50_B     1.392
+LGA    X    10_A      X    51_B     1.113
+LGA    X    11_A      X    52_B     0.799
+LGA    X    12_A      X    53_B     0.551
+LGA    X    13_B      X    61_B     2.678
+LGA    X    14_B      X    62_B     1.813
+LGA    X    15_B      X    63_B     1.827
+LGA    X    16_B      X    64_B     2.126
+LGA    X    17_B      X    65_B     2.410
+LGA    X    18_B      X    66_B     3.084
+LGA    X    19_B      X    67_B     1.368
+LGA    X    20_B      X    68_B     2.110
+LGA    X    21_B      X    69_B     1.152
+LGA    X    22_B      X    70_B     1.592
+LGA    X    23_B      X    71_B     1.434
+LGA    X    24_B      X    72_B     1.078
+
+#C4'           N1   N2   DIST      N    RMSD    GDT_TS    LGA_S3     LGA_Q 
+SUMMARY(GDT)   24   24    5.0     24    2.16    78.125    82.986     1.061
