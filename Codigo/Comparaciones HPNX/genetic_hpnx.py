@@ -1,7 +1,7 @@
 from enum import Enum
 import numpy as np
 import random
-import aprox as apx
+import aprox_hpnx as apx
 import math
 import proteins as pts
 from proteins import Directions
@@ -76,7 +76,11 @@ def fitness(p: str, ind_to_coor: dict, coor_to_ind: dict) -> int:
     for i in range(len(p)):
         for n in neighbours(ind_to_coor[i]):
             if coor_to_ind.get(n) != None and coor_to_ind.get(n) > i and coor_to_ind.get(n) - i > 1 and p[i] == 'H' and p[coor_to_ind.get(n)] == 'H':
+                energy += 4
+            elif coor_to_ind.get(n) != None and coor_to_ind.get(n) > i and coor_to_ind.get(n) - i > 1 and (p[i] == 'P' and p[coor_to_ind.get(n)] == 'N' or p[i] == 'N' and p[coor_to_ind.get(n)] == 'P'):
                 energy += 1
+            elif coor_to_ind.get(n) != None and coor_to_ind.get(n) > i and coor_to_ind.get(n) - i > 1 and (p[i] == 'P' and p[coor_to_ind.get(n)] == 'P' or p[i] == 'N' and p[coor_to_ind.get(n)] == 'N'):
+                energy -= 1
     return energy
 
 def mutation(p: list[pts.Directions], ind_to_coor: dict, coor_to_ind: dict) -> tuple[list[pts.Directions], dict, dict]:
@@ -165,10 +169,10 @@ def cross(p1: list[pts.Directions], p2: list[pts.Directions]) -> tuple[tuple[lis
 def genetic(N: int, it: int, p: str):
     population = None
     while population == None:
-        population = initial_population(p, N-1)
-    res_aprox = apx.algorithmC(apx.format_seq(p), apx.f)
-    ind_to_coor_aprox, coor_to_ind_aprox, _ = apx.prot_coord(res_aprox, in3D = True)
-    population.append((res_aprox, ind_to_coor_aprox, coor_to_ind_aprox))
+        population = initial_population(p, N)
+    #res_aprox = apx.algorithmC(apx.format_seq(p), math.sqrt)
+    #ind_to_coor_aprox, coor_to_ind_aprox, _ = apx.prot_coord(res_aprox, in3D = True)
+    #population.append((res_aprox, ind_to_coor_aprox, coor_to_ind_aprox))
     best_ins = []
     best_sol = 0
     for _ in range(it):
@@ -230,7 +234,7 @@ def genetic(N: int, it: int, p: str):
     return best_ins, best_sol
 
 def protein_fold(p: str):
-    ins, fit = genetic(100, 150, p)
+    ins, fit = genetic(100, 200, p)
     print('El valor obtenido por el algoritmo genético es', fit)
     """color = []
     for ch in p:
