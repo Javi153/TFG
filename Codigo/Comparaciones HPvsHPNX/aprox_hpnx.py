@@ -1,4 +1,4 @@
-import proteins as pts
+import hpnx_proteins as pts
 from matplotlib import pyplot as plt
 from mpl_toolkits import mplot3d
 import random
@@ -322,7 +322,7 @@ def prot_fold(str_seq: str):
     ind_to_coord, coord_to_ind, coord = prot_coord(res, True)
     fit = fitness(str_seq, ind_to_coord, coord_to_ind)
     print('El valor obtenido por el algoritmo aproximado es', fit)
-    color = []
+    """color = []
     for ch in str_seq:
         if ch == 'H':
             color.append('black')
@@ -337,16 +337,16 @@ def prot_fold(str_seq: str):
     coord_z = [t[2] for t in coord]
     ax = plt.axes(projection ='3d')
     ax.plot3D(coord_x, coord_y, coord_z, c = 'black', zorder = 1)
-    ax.scatter3D(coord_x, coord_y, coord_z, c = color, zorder = 2, s = 30)
+    ax.scatter3D(coord_x, coord_y, coord_z, c = color, zorder = 2)
     plt.axis('equal')
-    plt.show()
+    plt.show()"""
     return coord, fit
 
 
-for i in range(100):
+"""for i in range(100):
     r = random.randint(200, 500)
     str_seq = ''
     for _ in range(r):
         str_seq += random.choice(['H', 'P', 'N', 'X'])
     print("Caso %i: %s" % (i, str_seq))
-    prot_fold(str_seq)
+    prot_fold(str_seq)"""
