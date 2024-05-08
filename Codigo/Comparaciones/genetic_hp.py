@@ -7,6 +7,7 @@ import proteins as pts
 from proteins import Directions
 from matplotlib import pyplot as plt
 from mpl_toolkits import mplot3d
+import time
 
 #Directions = Enum('Directions', ['U', 'D', 'L', 'R', 'F', 'B'])
 
@@ -164,6 +165,9 @@ def cross(p1: list[pts.Directions], p2: list[pts.Directions]) -> tuple[tuple[lis
 
 def genetic(N: int, it: int, p: str):
     population = None
+    results_ins = []
+    results_sol = []
+    results_time = []
     while population == None:
         population = initial_population(p, N-1)
     res_aprox = apx.algorithmC(apx.format_seq(p), apx.f)
@@ -171,7 +175,7 @@ def genetic(N: int, it: int, p: str):
     population.append((res_aprox, ind_to_coor_aprox, coor_to_ind_aprox))
     best_ins = []
     best_sol = 0
-    for _ in range(it):
+    for ind in range(it):
         new_pop = []
         pop_fitness = [fitness(p, ind, coor) for (_, ind, coor) in population]
         aux_sol = max(pop_fitness)
@@ -222,15 +226,19 @@ def genetic(N: int, it: int, p: str):
             else:
                 new_pop.append(to_cross[i+1])
         population = new_pop
-    pop_fitness = [fitness(p, ind, coor) for (_, ind, coor) in population]
-    aux_sol = max(pop_fitness)
-    if aux_sol > best_sol:
-        best_sol = aux_sol
-        best_ins = population[np.argmax(pop_fitness)]
-    return best_ins, best_sol
+        if (ind+1) % 100 == 0:
+            pop_fitness = [fitness(p, ind, coor) for (_, ind, coor) in population]
+            aux_sol = max(pop_fitness)
+            if aux_sol > best_sol:
+                best_sol = aux_sol
+                best_ins = population[np.argmax(pop_fitness)]
+            results_ins.append(best_ins)
+            results_sol.append(best_sol)
+            results_time.append(time.time())
+    return results_ins, results_sol, results_time
 
 def protein_fold(p: str):
-    ins, fit = genetic(100, 150, p)
+    ins, fit, time = genetic(100, 500, p)
     print('El valor obtenido por el algoritmo genético es', fit)
     """color = []
     for ch in p:
@@ -247,7 +255,7 @@ def protein_fold(p: str):
     ax.scatter3D(coord_x, coord_y, coord_z, c = color, zorder = 2)
     plt.axis('equal')
     plt.show()"""
-    return fit
+    return fit, time
 
 #str_seq = 'HPPPHPPPHPPPHHPPPHPPPHPPPHPPPHPPPHPPPHPHPPPHPPPHPPPHHPPPHPPPHPPPHPPPHPPPHPPPHPHPPPHPPPHPPPHHPPPHPPPHPPPHPPPHPPPHPPPHPHPPPHPPPHPPPHHPPPHPPPHPPPHPPPHPPPHPPPHP'
 #protein_fold(str_seq)
