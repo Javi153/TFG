@@ -1,6 +1,7 @@
 from enum import Enum
+import proteins as pts
 
-Directions = Enum('Directions', ['U', 'D', 'L', 'R', 'F', 'B'])
+#Directions = Enum('Directions', ['U', 'D', 'L', 'R', 'F', 'B'])
 Block_type = Enum('Block_type', ['SEP', 'X_BLOCK', 'Y_BLOCK'])
 
 class prot_block:
@@ -66,13 +67,13 @@ class prot_block:
     def fold(self, ftype, reverse = False):
         if self._type == ftype:
             if reverse:
-                vert = Directions.U
-                hor = Directions.R
-                hor2 = Directions.L
+                vert = pts.Directions.U
+                hor = pts.Directions.R
+                hor2 = pts.Directions.L
             else:
-                vert = Directions.D
-                hor = Directions.L
-                hor2 = Directions.R
+                vert = pts.Directions.D
+                hor = pts.Directions.L
+                hor2 = pts.Directions.R
             dir = []
             for i in range(0, len(self._seq)):
                 if i % 2 == 0 and self._seq[i] == 1:
@@ -321,13 +322,13 @@ class prot:
     
     def fold(self, ftype, reverse = False):
         if reverse:
-            vert = Directions.U
-            hor = Directions.R
-            hor2 = Directions.L
+            vert = pts.Directions.U
+            hor = pts.Directions.R
+            hor2 = pts.Directions.L
         else:
-            vert = Directions.D
-            hor = Directions.L
-            hor2 = Directions.R
+            vert = pts.Directions.D
+            hor = pts.Directions.L
+            hor2 = pts.Directions.R
         size = 0
         dir = []
         for bl in self._blocks:

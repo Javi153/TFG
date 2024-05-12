@@ -1,4 +1,5 @@
-import hp_proteins as pts
+import hp_proteins as hppts
+import proteins as pts
 from matplotlib import pyplot as plt
 import math
 from mpl_toolkits import mplot3d
@@ -9,29 +10,29 @@ import numpy as np
 def f(x: float) -> float:
     return 11/18 * math.sqrt(x)
 
-def Mxy(p1: pts.prot, p2: pts.prot, getmin = True) -> int:
+def Mxy(p1: hppts.prot, p2: hppts.prot, getmin = True) -> int:
     if getmin:
         return min(p1.Nx(), p2.Ny())
     else:
         return max(p1.Nx(), p2.Ny())
     
-def Myx(p1: pts.prot, p2: pts.prot, getmin = True) -> int:
+def Myx(p1: hppts.prot, p2: hppts.prot, getmin = True) -> int:
     return Mxy(p2, p1, getmin)
     
 def cond(a, b, A, B) -> bool:
     return a < b or (a == b and A < B)
 
-def subroutine1(p : pts.prot):
+def subroutine1(p : hppts.prot):
     if len(p.getBlocks()) < 3: 
-        return p, pts.prot([], False), False
+        return p, hppts.prot([], False), False
     reverse = False
     P1 = []
     P2 = []
-    pb = pts.prot_block(pts.Block_type.SEP)
+    pb = hppts.prot_block(hppts.Block_type.SEP)
     pb.add_amino(0)
-    B1 = pts.prot(p.getBlocks()[0:2] + [pb])
+    B1 = hppts.prot(p.getBlocks()[0:2] + [pb])
     sep = p.getBlocks()[2]
-    B2 = pts.prot([pb] + p.getBlocks()[3:])
+    B2 = hppts.prot([pb] + p.getBlocks()[3:])
     m1 = Mxy(B1, B2)
     m2 = Myx(B1, B2)
     M1 = Mxy(B1, B2, False)
@@ -49,8 +50,8 @@ def subroutine1(p : pts.prot):
         E = M2
         reverse = False
     for i in range(3, (len(p.getBlocks()) + 1) // 2):
-        B1 = pts.prot(p.getBlocks()[0:2*(i-1)] + [pb])
-        B2 = pts.prot([pb] + p.getBlocks()[(2*i-1):])
+        B1 = hppts.prot(p.getBlocks()[0:2*(i-1)] + [pb])
+        B2 = hppts.prot([pb] + p.getBlocks()[(2*i-1):])
         m1 = Mxy(B1, B2)
         m2 = Myx(B1, B2)
         M1 = Mxy(B1, B2, False)
@@ -152,14 +153,14 @@ def algorithmA(p: list[int]) -> list[pts.Directions]:
         for _ in range(sum(p) - 1):
             dir.append(pts.Directions.R)
         return dir
-    paux = pts.prot(p, False)
-    pb = pts.prot_block(pts.Block_type.SEP)
+    paux = hppts.prot(p, False)
+    pb = hppts.prot_block(hppts.Block_type.SEP)
     pb.add_amino(0)
     for _ in range(0, paux.getBlocks()[0].getSize()):
         dir.append(pts.Directions.D)
-    P1, sep, P2, reverse = subroutine1(pts.prot([pb] + paux.getBlocks()[1:-1] + [pb]))
-    fold1 = P1.fold(pts.Block_type.Y_BLOCK, reverse)
-    fold2 = P2.fold(pts.Block_type.X_BLOCK, not reverse)
+    P1, sep, P2, reverse = subroutine1(hppts.prot([pb] + paux.getBlocks()[1:-1] + [pb]))
+    fold1 = P1.fold(hppts.Block_type.Y_BLOCK, reverse)
+    fold2 = P2.fold(hppts.Block_type.X_BLOCK, not reverse)
     union = []
     for _ in range(sep.getSize() // 2):
         union.append(pts.Directions.D)
@@ -181,26 +182,26 @@ def algorithmB(p: list[int]) -> list[pts.Directions]:
         for _ in range(sum(p) - 1):
             dir.append(pts.Directions.R)
         return dir
-    paux = pts.prot(p, False)
-    pb = pts.prot_block(pts.Block_type.SEP)
+    paux = hppts.prot(p, False)
+    pb = hppts.prot_block(hppts.Block_type.SEP)
     z_i = 0
     pb.add_amino(0)
-    P1, sep, P2, reverse = subroutine1(pts.prot([pb] + paux.getBlocks()[1:-1] + [pb]))
+    P1, sep, P2, reverse = subroutine1(hppts.prot([pb] + paux.getBlocks()[1:-1] + [pb]))
     if len(P1.getBlocks()) <= 1 or len(P2.getBlocks()) <= 1:
         return [pts.Directions.R for _ in range(sum(p) - 1)]
     z_i = sep.getSize()
     if P1.Ny() > P2.Nx() and z_i == 0:
         if reverse:
-            z_i += P1.del_first_from_block(pts.Block_type.Y_BLOCK)
+            z_i += P1.del_first_from_block(hppts.Block_type.Y_BLOCK)
         else:
-            z_i += P1.del_last_from_block(pts.Block_type.Y_BLOCK)
+            z_i += P1.del_last_from_block(hppts.Block_type.Y_BLOCK)
     elif P1.Ny() < P2.Nx() and z_i == 0:
         if reverse:
-            z_i += P2.del_last_from_block(pts.Block_type.X_BLOCK)
+            z_i += P2.del_last_from_block(hppts.Block_type.X_BLOCK)
         else:
-            z_i += P2.del_first_from_block(pts.Block_type.X_BLOCK)
-    fold1 = P1.fold(pts.Block_type.Y_BLOCK, reverse)
-    fold2 = P2.fold(pts.Block_type.X_BLOCK, not reverse)
+            z_i += P2.del_first_from_block(hppts.Block_type.X_BLOCK)
+    fold1 = P1.fold(hppts.Block_type.Y_BLOCK, reverse)
+    fold2 = P2.fold(hppts.Block_type.X_BLOCK, not reverse)
     union = []
     for _ in range(z_i // 2):
         union.append(pts.Directions.D)
@@ -223,8 +224,8 @@ def algorithmB(p: list[int]) -> list[pts.Directions]:
             post_last_one = 0
             first_prot = P1
             last_prot = P2
-            first_type = pts.Block_type.Y_BLOCK
-            last_type = pts.Block_type.X_BLOCK
+            first_type = hppts.Block_type.Y_BLOCK
+            last_type = hppts.Block_type.X_BLOCK
             if reverse:
                 first_prot, last_prot, first_type, last_type = last_prot, first_prot, last_type, first_type
             for bl in first_prot.getBlocks():
@@ -259,8 +260,8 @@ def algorithmB(p: list[int]) -> list[pts.Directions]:
         first = P1
         second = P2
         shorter = P1
-        first_type = pts.Block_type.Y_BLOCK
-        second_type = pts.Block_type.X_BLOCK
+        first_type = hppts.Block_type.Y_BLOCK
+        second_type = hppts.Block_type.X_BLOCK
         if reverse:
             first, second, first_type, second_type = second, first, second_type, first_type
         if P2.Nx() < P1.Ny():
@@ -307,7 +308,7 @@ def algorithmB(p: list[int]) -> list[pts.Directions]:
                 dir[i] = hor1
             elif dir[i] == hor1:
                 dir[i] = pts.Directions.U
-        cond = (P1.Ny() - P2.Nx() > 1 and ((reverse and p[0] == 0 and P2.getBlocks()[1].getType() == pts.Block_type.X_BLOCK) or (not reverse and p[-1] == 0 and P2.getBlocks()[-2].getType() == pts.Block_type.X_BLOCK))) or (P2.Nx() - P1.Ny() > 1 and ((reverse and p[-1] == 0 and P1.getBlocks()[-2].getType() == pts.Block_type.Y_BLOCK) or (not reverse and p[0] == 0 and P1.getBlocks()[1].getType() == pts.Block_type.Y_BLOCK)))
+        cond = (P1.Ny() - P2.Nx() > 1 and ((reverse and p[0] == 0 and P2.getBlocks()[1].getType() == hppts.Block_type.X_BLOCK) or (not reverse and p[-1] == 0 and P2.getBlocks()[-2].getType() == hppts.Block_type.X_BLOCK))) or (P2.Nx() - P1.Ny() > 1 and ((reverse and p[-1] == 0 and P1.getBlocks()[-2].getType() == hppts.Block_type.Y_BLOCK) or (not reverse and p[0] == 0 and P1.getBlocks()[1].getType() == hppts.Block_type.Y_BLOCK)))
         if cond:
             cont = last_one - second_last_one
             if shorter == first:
@@ -404,10 +405,10 @@ def algorithmC(p: list[int], f) -> list[pts.Directions]:
         for _ in range(sum(p) - 1):
             dir.append(pts.Directions.R)
         return dir
-    paux = pts.prot(p, False)
-    pb = pts.prot_block(pts.Block_type.SEP)
+    paux = hppts.prot(p, False)
+    pb = hppts.prot_block(hppts.Block_type.SEP)
     pb.add_amino(0)
-    P1, sep, P2, reverse = subroutine1(pts.prot([pb] + paux.getBlocks()[1:-1] + [pb]))
+    P1, sep, P2, reverse = subroutine1(hppts.prot([pb] + paux.getBlocks()[1:-1] + [pb]))
     K = max(1, math.floor(f(min(P1.Ny(), P2.Nx()))))
     J = math.floor((min(P1.Ny(), P2.Nx()) - 2 * K + 1) / K)
     if K <= 1 or J < 2:
@@ -419,10 +420,10 @@ def algorithmC(p: list[int], f) -> list[pts.Directions]:
         dir.append(pts.Directions.U)
     first_p = P1
     second_p = P2
-    first = P1.fold(pts.Block_type.Y_BLOCK, reverse)
-    second = P2.fold(pts.Block_type.X_BLOCK, not reverse)
-    first_type = pts.Block_type.Y_BLOCK
-    second_type = pts.Block_type.X_BLOCK
+    first = P1.fold(hppts.Block_type.Y_BLOCK, reverse)
+    second = P2.fold(hppts.Block_type.X_BLOCK, not reverse)
+    first_type = hppts.Block_type.Y_BLOCK
+    second_type = hppts.Block_type.X_BLOCK
     if reverse:
         first_p, second_p = second_p, first_p
         first, second = second, first

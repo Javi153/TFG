@@ -1,31 +1,32 @@
-import hpnx_proteins as pts
+import hpnx_proteins as hpnxpts
+import proteins as pts
 from matplotlib import pyplot as plt
 from mpl_toolkits import mplot3d
 import random
 
-def Mxy(p1: pts.prot, p2: pts.prot, getmin = True) -> int:
+def Mxy(p1: hpnxpts.prot, p2: hpnxpts.prot, getmin = True) -> int:
     if getmin:
         return min(p1.Nx(), p2.Ny())
     else:
         return max(p1.Nx(), p2.Ny())
     
-def Myx(p1: pts.prot, p2: pts.prot, getmin = True) -> int:
+def Myx(p1: hpnxpts.prot, p2: hpnxpts.prot, getmin = True) -> int:
     return Mxy(p2, p1, getmin)
     
 def cond(a, b, A, B) -> bool:
     return a < b or (a == b and A < B)
 
-def subroutine1(p : pts.prot):
+def subroutine1(p : hpnxpts.prot):
     if len(p.getBlocks()) < 3: 
-        return p, pts.prot([], False), False
+        return p, hpnxpts.prot([], False), False
     reverse = False
     P1 = []
     P2 = []
-    pb = pts.prot_block(pts.Block_type.SEP)
+    pb = hpnxpts.prot_block(hpnxpts.Block_type.SEP)
     pb.add_amino(0)
-    B1 = pts.prot(p.getBlocks()[0:2] + [pb])
+    B1 = hpnxpts.prot(p.getBlocks()[0:2] + [pb])
     sep = p.getBlocks()[2]
-    B2 = pts.prot([pb] + p.getBlocks()[3:])
+    B2 = hpnxpts.prot([pb] + p.getBlocks()[3:])
     m1 = Mxy(B1, B2)
     m2 = Myx(B1, B2)
     M1 = Mxy(B1, B2, False)
@@ -43,8 +44,8 @@ def subroutine1(p : pts.prot):
         E = M2
         reverse = False
     for i in range(3, (len(p.getBlocks()) + 1) // 2):
-        B1 = pts.prot(p.getBlocks()[0:2*(i-1)] + [pb])
-        B2 = pts.prot([pb] + p.getBlocks()[(2*i-1):])
+        B1 = hpnxpts.prot(p.getBlocks()[0:2*(i-1)] + [pb])
+        B2 = hpnxpts.prot([pb] + p.getBlocks()[(2*i-1):])
         m1 = Mxy(B1, B2)
         m2 = Myx(B1, B2)
         M1 = Mxy(B1, B2, False)
@@ -92,16 +93,16 @@ def aproxHPNX(p: str):
         for _ in range(sum(paux) - 1):
             dir.append(pts.Directions.R)
         return dir
-    paux = pts.prot(paux, False)
-    pb = pts.prot_block(pts.Block_type.SEP)
+    paux = hpnxpts.prot(paux, False)
+    pb = hpnxpts.prot_block(hpnxpts.Block_type.SEP)
     pb.add_amino(0)
     for _ in range(0, paux.getBlocks()[0].getSize()):
         dir.append(pts.Directions.D)
-    P1, sep, P2, reverse = subroutine1(pts.prot([pb] + paux.getBlocks()[1:-1] + [pb]))
+    P1, sep, P2, reverse = subroutine1(hpnxpts.prot([pb] + paux.getBlocks()[1:-1] + [pb]))
     if len(P1.getBlocks()) <= 1 or len(P2.getBlocks()) <= 1:
         return [pts.Directions.R for _ in range(len(p) - 1)]
-    P1.setType(pts.Block_type.Y_BLOCK)
-    P2.setType(pts.Block_type.X_BLOCK)
+    P1.setType(hpnxpts.Block_type.Y_BLOCK)
+    P2.setType(hpnxpts.Block_type.X_BLOCK)
     if reverse:
         fold1 = P2.centrals()
         fold2 = P1.centrals()

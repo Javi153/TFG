@@ -1,6 +1,7 @@
 from enum import Enum
+import proteins as pts
 
-Directions = Enum('Directions', ['U', 'D', 'L', 'R', 'F', 'B'])
+#Directions = Enum('Directions', ['U', 'D', 'L', 'R', 'F', 'B'])
 Block_type = Enum('Block_type', ['SEP', 'X_BLOCK', 'Y_BLOCK'])
 
 class prot_block:
