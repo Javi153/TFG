@@ -11,7 +11,7 @@ for line in content:
     line = list(map(float, line))
     content_num.append(line)
 
-"""mean_scores = []
+mean_scores = []
 mean_times = []
 for i in range(len(content_num)):
     if i % 2 == 0:
@@ -20,13 +20,16 @@ for i in range(len(content_num)):
         mean_times.append(sum(content_num[i]) / len(content_num[i]))
 
 
-dataframe = pd.DataFrame(
+"""dataframe = pd.DataFrame(
     {
-        "20-50 aminoácidos": mean_scores[0:6],
-        "50-200 aminoácidos": mean_scores[6:12],
-        "200-500 aminoácidos": mean_scores[12:18]
+        "Aprox": mean_scores[:18:6],
+        "Gen100": mean_scores[1:18:6],
+        "Gen200": mean_scores[2:18:6],
+        "Gen300": mean_scores[3:18:6],
+        "Gen400": mean_scores[4:18:6],
+        "Gen500": mean_scores[5:18:6]
     },
-    index=["Aprox", "Gen100", "Gen200", "Gen300", "Gen400", "Gen500"],
+    index=["20-50 aminoácidos", "50-200 aminoácidos", "200-500 aminoácidos"],
 )
 axis = dataframe.plot.bar(title = 'Algoritmos para el modelo HPNX', ylabel = 'Energía', rot=0)
 print(axis)
@@ -34,15 +37,57 @@ plt.show()
 
 dataframe = pd.DataFrame(
     {
-        "20-50 aminoácidos": mean_scores[18:24],
-        "50-200 aminoácidos": mean_scores[24:30],
-        "200-500 aminoácidos": mean_scores[30:36]
+        "Aprox": mean_times[:18:6],
+        "Gen100": mean_times[1:18:6],
+        "Gen200": mean_times[2:18:6],
+        "Gen300": mean_times[3:18:6],
+        "Gen400": mean_times[4:18:6],
+        "Gen500": mean_times[5:18:6]
     },
-    index=["Aprox", "Hib100", "Hib200", "Hib300", "Hib400", "Hib500"],
+    index=["20-50 aminoácidos", "50-200 aminoácidos", "200-500 aminoácidos"],
+)
+axis = dataframe.plot.bar(title = 'Algoritmos para el modelo HPNX', ylabel = 'Tiempo (seg)', rot=0)
+print(axis)
+plt.show()
+
+dataframe = pd.DataFrame(
+    {
+        "Aprox": mean_scores[18::6],
+        "Hib100": mean_scores[19::6],
+        "Hib200": mean_scores[20::6],
+        "Hib300": mean_scores[21::6],
+        "Hib400": mean_scores[22::6],
+        "Hib500": mean_scores[23::6]
+    },
+    index=["20-50 aminoácidos", "50-200 aminoácidos", "200-500 aminoácidos"],
 )
 axis = dataframe.plot.bar(title = 'Algoritmo híbrido para el modelo HPNX', ylabel = 'Energía', rot=0)
 print(axis)
+plt.show()
+
+dataframe = pd.DataFrame(
+    {
+        "Aprox": mean_times[:18:6],
+        "Hib100": mean_times[1:18:6],
+        "Hib200": mean_times[2:18:6],
+        "Hib300": mean_times[3:18:6],
+        "Hib400": mean_times[4:18:6],
+        "Hib500": mean_times[5:18:6]
+    },
+    index=["20-50 aminoácidos", "50-200 aminoácidos", "200-500 aminoácidos"],
+)
+axis = dataframe.plot.bar(title = 'Algoritmo híbrido para el modelo HPNX', ylabel = 'Tiempo (seg)', rot=0)
+print(axis)
 plt.show()"""
 
-for i in range(5):
-    print(sum([content_num[2*i + 26][j] <= content_num[2*i+62][j] for j in range(200)]))
+aux = mean_scores[18:]
+aux2 = mean_scores[:18]
+for i in range(0, len(aux)-1):
+    print("Comparacion %i: %f" % (i+1, aux[i+1] / aux[i]))
+print("FLAG")
+
+for i in range(0, len(aux)):
+    print("Comparacion %i: %f" % (i+1, aux[i] / aux2[i]))
+
+"""for i in range(5):
+    print(sum([content_num[2*i + 26][j] <= content_num[2*i+62][j] for j in range(200)]))"""
