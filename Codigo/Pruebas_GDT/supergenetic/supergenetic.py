@@ -104,15 +104,15 @@ def amino_to_ind(c: str) -> int:
 def get_energy(p: str, i: int, j: int, table: list[list[int]]) -> int:
     first = amino_to_ind(p[i])
     second = amino_to_ind(p[j])
-    if second > first:
+    if first > second:
         first, second = second, first
-    return table[first][second]
+    return table[first][second - first]
 
 def fitness(p: str, ind_to_coor: dict, coor_to_ind: dict, table: list[list[int]]) -> int:
     energy = 0
     for i in range(len(p)):
         for n in neighbours(ind_to_coor[i]):
-            if coor_to_ind.get(n) != None and coor_to_ind.get(n) > i and coor_to_ind.get(n) - i > 1 and p[i] == 'H' and p[coor_to_ind.get(n)] == 'H':
+            if coor_to_ind.get(n) != None and coor_to_ind.get(n) > i and coor_to_ind.get(n) - i > 1:
                 energy += get_energy(p, i, coor_to_ind.get(n), table)
     return energy
 
