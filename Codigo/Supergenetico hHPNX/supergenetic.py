@@ -1,49 +1,46 @@
 from enum import Enum
 import numpy as np
 import random
-#import aprox as apx
 import math
-import proteins as pts
-from proteins import Directions
 from matplotlib import pyplot as plt
 from mpl_toolkits import mplot3d
 
-#Directions = Enum('Directions', ['U', 'D', 'L', 'R', 'F', 'B'])
+Directions = Enum('Directions', ['U', 'D', 'L', 'R', 'F', 'B'])
 
-def next_dir(d: pts.Directions, c: tuple[int, int, int]):
-    if d == pts.Directions.U:
+def next_dir(d: Directions, c: tuple[int, int, int]):
+    if d == Directions.U:
         return (c[0], c[1] + 1, c[2])
-    elif d == pts.Directions.D:
+    elif d == Directions.D:
         return (c[0], c[1] - 1, c[2])
-    elif d == pts.Directions.L:
+    elif d == Directions.L:
         return (c[0] - 1, c[1], c[2])
-    elif d == pts.Directions.R:
+    elif d == Directions.R:
         return (c[0] + 1, c[1], c[2])
-    elif d == pts.Directions.F:
+    elif d == Directions.F:
         return (c[0], c[1], c[2] + 1)
-    elif d == pts.Directions.B:
+    elif d == Directions.B:
         return (c[0], c[1], c[2] - 1)
 
-def neighbours(c: tuple[int, int, int]) -> list[pts.Directions]:
+def neighbours(c: tuple[int, int, int]) -> list[Directions]:
     res = []
-    for d in pts.Directions:
+    for d in Directions:
         res.append(next_dir(d, c))
     return res
 
-def free_neighbours(c: tuple[int, int, int], coor_dic: dict) -> list[pts.Directions]:
+def free_neighbours(c: tuple[int, int, int], coor_dic: dict) -> list[Directions]:
     res = []
-    for d in pts.Directions:
+    for d in Directions:
         if next_dir(d, c) not in coor_dic:
             res.append(d)
     return res
 
-def initial_population(p: str, cant: int) -> list[tuple[list[pts.Directions], dict, dict]]:
+def initial_population(p: str, cant: int) -> list[tuple[list[Directions], dict, dict]]:
     res = []
     repetition = -1
     i_repeat = -1
     for _ in range(cant):
         dir = [0] * (len(p) - 1)
-        dir[0] = random.choice(list(pts.Directions))
+        dir[0] = random.choice(list(Directions))
         next = next_dir(dir[0], (0,0,0))
         ind_to_coor = {0 : (0,0,0), 1 : next}
         coor_to_ind = {(0,0,0) : 0, next : 1}
@@ -79,10 +76,10 @@ def fitness(p: str, ind_to_coor: dict, coor_to_ind: dict) -> int:
                 energy += 1
     return energy
 
-def mutation(p: list[pts.Directions], ind_to_coor: dict, coor_to_ind: dict) -> tuple[list[pts.Directions], dict, dict]:
+def mutation(p: list[Directions], ind_to_coor: dict, coor_to_ind: dict) -> tuple[list[Directions], dict, dict]:
     mut_point = random.randint(1, len(p) - 2)
     res = p[0:mut_point]
-    res.append(random.choice(list(pts.Directions)))
+    res.append(random.choice(list(Directions)))
     res = res + p[mut_point + 1:]
     ind_to_coor = {0 : (0,0,0)}
     coor_to_ind = {(0,0,0) : 0}
@@ -110,7 +107,7 @@ def mutation(p: list[pts.Directions], ind_to_coor: dict, coor_to_ind: dict) -> t
             i += 1
     return (p, ind_to_coor, coor_to_ind)
 
-def cross(p1: list[pts.Directions], p2: list[pts.Directions]) -> tuple[tuple[list[pts.Directions], dict, dict], tuple[list[pts.Directions], dict, dict]]:
+def cross(p1: list[Directions], p2: list[Directions]) -> tuple[tuple[list[Directions], dict, dict], tuple[list[Directions], dict, dict]]:
     cross_point = random.randint(1, len(p1) - 2)
     child1 = [d for d in p1[0:cross_point]] + [d for d in p2[cross_point:]]
     child2 = [d for d in p2[0:cross_point]] + [d for d in p1[cross_point:]]
@@ -256,3 +253,26 @@ def protein_fold(p: str):
 
 #str_seq = 'HPPHHHPHPPPHHPHPPPHPHHHPPHHPHPHPHPHHHPPHPHPPHPHPHHHPHPHPHHHPHPPPHHPPHPPPHPPHPHPPPPHHPHPPHPHPHHPPHPHPPHPHHPPHHPHPHHPHPHPPHHHPHP'
 #protein_fold(str_seq)
+
+GROUPS_NO = 5
+
+def translate(aminos: str) -> str:
+    result = ''
+    for a in aminos:
+        if a in 'AV':
+            result = result + 'h'
+        elif a in 'RHK':
+            result = result + 'P'
+        elif a in 'DE':
+            result = result + 'N'
+        elif a in 'NCQSTY':
+            result = result + 'X'
+        else:
+            result = result + 'H'
+    return result
+
+def generate_table() -> list[list[int]]:
+    table = []
+    for i in range(GROUPS_NO):
+        table.append([random.randint(-10, 10) for _ in range(GROUPS_NO - i)])
+    return table

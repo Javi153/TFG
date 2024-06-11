@@ -1,49 +1,46 @@
 from enum import Enum
 import numpy as np
 import random
-#import aprox as apx
 import math
-import proteins as pts
-from proteins import Directions
 from matplotlib import pyplot as plt
 from mpl_toolkits import mplot3d
 
-#Directions = Enum('Directions', ['U', 'D', 'L', 'R', 'F', 'B'])
+Directions = Enum('Directions', ['U', 'D', 'L', 'R', 'F', 'B'])
 
-def next_dir(d: pts.Directions, c: tuple[int, int, int]):
-    if d == pts.Directions.U:
+def next_dir(d: Directions, c: tuple[int, int, int]):
+    if d == Directions.U:
         return (c[0], c[1] + 1, c[2])
-    elif d == pts.Directions.D:
+    elif d == Directions.D:
         return (c[0], c[1] - 1, c[2])
-    elif d == pts.Directions.L:
+    elif d == Directions.L:
         return (c[0] - 1, c[1], c[2])
-    elif d == pts.Directions.R:
+    elif d == Directions.R:
         return (c[0] + 1, c[1], c[2])
-    elif d == pts.Directions.F:
+    elif d == Directions.F:
         return (c[0], c[1], c[2] + 1)
-    elif d == pts.Directions.B:
+    elif d == Directions.B:
         return (c[0], c[1], c[2] - 1)
 
-def neighbours(c: tuple[int, int, int]) -> list[pts.Directions]:
+def neighbours(c: tuple[int, int, int]) -> list[Directions]:
     res = []
-    for d in pts.Directions:
+    for d in Directions:
         res.append(next_dir(d, c))
     return res
 
-def free_neighbours(c: tuple[int, int, int], coor_dic: dict) -> list[pts.Directions]:
+def free_neighbours(c: tuple[int, int, int], coor_dic: dict) -> list[Directions]:
     res = []
-    for d in pts.Directions:
+    for d in Directions:
         if next_dir(d, c) not in coor_dic:
             res.append(d)
     return res
 
-def initial_population(p: str, cant: int) -> list[tuple[list[pts.Directions], dict, dict]]:
+def initial_population(p: str, cant: int) -> list[tuple[list[Directions], dict, dict]]:
     res = []
     repetition = -1
     i_repeat = -1
     for _ in range(cant):
         dir = [0] * (len(p) - 1)
-        dir[0] = random.choice(list(pts.Directions))
+        dir[0] = random.choice(list(Directions))
         next = next_dir(dir[0], (0,0,0))
         ind_to_coor = {0 : (0,0,0), 1 : next}
         coor_to_ind = {(0,0,0) : 0, next : 1}
@@ -79,10 +76,10 @@ def fitness(p: str, ind_to_coor: dict, coor_to_ind: dict) -> int:
                 energy += 1
     return energy
 
-def mutation(p: list[pts.Directions], ind_to_coor: dict, coor_to_ind: dict) -> tuple[list[pts.Directions], dict, dict]:
+def mutation(p: list[Directions], ind_to_coor: dict, coor_to_ind: dict) -> tuple[list[Directions], dict, dict]:
     mut_point = random.randint(1, len(p) - 2)
     res = p[0:mut_point]
-    res.append(random.choice(list(pts.Directions)))
+    res.append(random.choice(list(Directions)))
     res = res + p[mut_point + 1:]
     ind_to_coor = {0 : (0,0,0)}
     coor_to_ind = {(0,0,0) : 0}
@@ -110,7 +107,7 @@ def mutation(p: list[pts.Directions], ind_to_coor: dict, coor_to_ind: dict) -> t
             i += 1
     return (p, ind_to_coor, coor_to_ind)
 
-def cross(p1: list[pts.Directions], p2: list[pts.Directions]) -> tuple[tuple[list[pts.Directions], dict, dict], tuple[list[pts.Directions], dict, dict]]:
+def cross(p1: list[Directions], p2: list[Directions]) -> tuple[tuple[list[Directions], dict, dict], tuple[list[Directions], dict, dict]]:
     cross_point = random.randint(1, len(p1) - 2)
     child1 = [d for d in p1[0:cross_point]] + [d for d in p2[cross_point:]]
     child2 = [d for d in p2[0:cross_point]] + [d for d in p1[cross_point:]]
@@ -166,9 +163,6 @@ def genetic(N: int, it: int, p: str):
     population = None
     while population == None:
         population = initial_population(p, N)
-    #res_aprox = apx.algorithmC(apx.format_seq(p), math.sqrt)
-    #ind_to_coor_aprox, coor_to_ind_aprox, _ = apx.prot_coord(res_aprox, in3D = True)
-    #population.append((res_aprox, ind_to_coor_aprox, coor_to_ind_aprox))
     best_ins = []
     best_sol = 0
     for _ in range(it):
@@ -229,9 +223,28 @@ def genetic(N: int, it: int, p: str):
         best_ins = population[np.argmax(pop_fitness)]
     return best_ins, best_sol
 
-def protein_fold(p: str):
+def initial_tables(N):
+    
+
+def protein_fold(lp: list[str]):
+    #leer proteinas, supongamos lp
+    tables = initial_tables(N)
     ins, fit = genetic(100, 150, p)
     print('El valor obtenido por el algoritmo genético es', fit)
+    f = open("formato.pdb", "w")
+    i = 0
+    f.write("MOLECULE genetico\n")
+    for c in ins[2]:
+        f.write("ATOM  ")
+        f.write("%5d " % (i+1))
+        f.write("CA   ")
+        f.write("%s A%4d    " % ("ABC", i+1))
+        f.write("%8.3f" % c[0])
+        f.write("%8.3f" % c[1])
+        f.write("%8.3f  1.00 83.00           C\n" % c[2])
+        i += 1
+    f.write("END\n")
+    f.close()
     """color = []
     for ch in p:
         if ch == 'H':
@@ -248,8 +261,8 @@ def protein_fold(p: str):
     plt.axis('equal')
     plt.show()"""
 
-#str_seq = 'HPPPHPPPHPPPHHPPPHPPPHPPPHPPPHPPPHPPPHPHPPPHPPPHPPPHHPPPHPPPHPPPHPPPHPPPHPPPHPHPPPHPPPHPPPHHPPPHPPPHPPPHPPPHPPPHPPPHPHPPPHPPPHPPPHHPPPHPPPHPPPHPPPHPPPHPPPHP'
-#protein_fold(str_seq)
+str_seq = 'HPPPHPPPHPPPHHPPPHPPPHPPPHPPPHPPPHPPPHPHPPPHPPPHPPPHHPPPHPPPHPPPHPPPHPPPHPPPHPHPPPHPPPHPPPHHPPPHPPPHPPPHPPPHPPPHPPPHPHPPPHPPPHPPPHHPPPHPPPHPPPHPPPHPPPHPPPHP'
+protein_fold(str_seq)
 
 #str_seq = 'HPPHPHHPHHPPHPHPHHHPHPHPPHPHPHHPHPPHHHPHPHHPHPPPPHHHPPHHPHPHHPHHPPHPHPPHPPHHHPPHPPHPPHPHHPHPHPPHPHPHHPHPPHHHPHPHHPHPPPPHHHPPHHPHPHHPHH'
 #protein_fold(str_seq)

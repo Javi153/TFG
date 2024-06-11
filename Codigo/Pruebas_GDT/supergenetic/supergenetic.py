@@ -1,49 +1,67 @@
 from enum import Enum
 import numpy as np
 import random
-#import aprox as apx
 import math
-import proteins as pts
-from proteins import Directions
 from matplotlib import pyplot as plt
 from mpl_toolkits import mplot3d
+import subprocess
+from subprocess import PIPE
+import os
 
-#Directions = Enum('Directions', ['U', 'D', 'L', 'R', 'F', 'B'])
+Directions = Enum('Directions', ['U', 'D', 'L', 'R', 'F', 'B'])
 
-def next_dir(d: pts.Directions, c: tuple[int, int, int]):
-    if d == pts.Directions.U:
+NO_GRUPOS = 5
+
+def next_dir(d: Directions, c: tuple[int, int, int]):
+    if d == Directions.U:
         return (c[0], c[1] + 1, c[2])
-    elif d == pts.Directions.D:
+    elif d == Directions.D:
         return (c[0], c[1] - 1, c[2])
-    elif d == pts.Directions.L:
+    elif d == Directions.L:
         return (c[0] - 1, c[1], c[2])
-    elif d == pts.Directions.R:
+    elif d == Directions.R:
         return (c[0] + 1, c[1], c[2])
-    elif d == pts.Directions.F:
+    elif d == Directions.F:
         return (c[0], c[1], c[2] + 1)
-    elif d == pts.Directions.B:
+    elif d == Directions.B:
         return (c[0], c[1], c[2] - 1)
 
-def neighbours(c: tuple[int, int, int]) -> list[pts.Directions]:
+def neighbours(c: tuple[int, int, int]) -> list[Directions]:
     res = []
-    for d in pts.Directions:
+    for d in Directions:
         res.append(next_dir(d, c))
     return res
 
-def free_neighbours(c: tuple[int, int, int], coor_dic: dict) -> list[pts.Directions]:
+def free_neighbours(c: tuple[int, int, int], coor_dic: dict) -> list[Directions]:
     res = []
-    for d in pts.Directions:
+    for d in Directions:
         if next_dir(d, c) not in coor_dic:
             res.append(d)
     return res
 
-def initial_population(p: str, cant: int) -> list[tuple[list[pts.Directions], dict, dict]]:
+def translation(p: str) -> str:
+    result = ''
+    for a in p:
+        if a in ['ALA', 'VAL']:
+            result += 'h'
+        elif a in ['GLY', 'ILE', 'LEU', 'MET', 'PHE', 'PRO', 'TRP']:
+            result += 'H'
+        elif a in ['ARG', 'HIS', 'LYS']:
+            result += 'P'
+        elif a in ['ASP', 'GLU']:
+            result += 'N'
+        else:
+            result += 'X'
+    return result
+
+
+def initial_population(p: str, cant: int) -> list[tuple[list[Directions], dict, dict]]:
     res = []
     repetition = -1
     i_repeat = -1
     for _ in range(cant):
         dir = [0] * (len(p) - 1)
-        dir[0] = random.choice(list(pts.Directions))
+        dir[0] = random.choice(list(Directions))
         next = next_dir(dir[0], (0,0,0))
         ind_to_coor = {0 : (0,0,0), 1 : next}
         coor_to_ind = {(0,0,0) : 0, next : 1}
@@ -71,18 +89,37 @@ def initial_population(p: str, cant: int) -> list[tuple[list[pts.Directions], di
         res.append((dir, ind_to_coor, coor_to_ind))
     return res
 
-def fitness(p: str, ind_to_coor: dict, coor_to_ind: dict) -> int:
+def amino_to_ind(c: str) -> int:
+    if c == 'h':
+        return 0
+    elif c == 'H':
+        return 1
+    elif c == 'P':
+        return 2
+    elif c == 'N':
+        return 3
+    else:
+        return 4
+
+def get_energy(p: str, i: int, j: int, table: list[list[int]]) -> int:
+    first = amino_to_ind(p[i])
+    second = amino_to_ind(p[j])
+    if second > first:
+        first, second = second, first
+    return table[first][second]
+
+def fitness(p: str, ind_to_coor: dict, coor_to_ind: dict, table: list[list[int]]) -> int:
     energy = 0
     for i in range(len(p)):
         for n in neighbours(ind_to_coor[i]):
             if coor_to_ind.get(n) != None and coor_to_ind.get(n) > i and coor_to_ind.get(n) - i > 1 and p[i] == 'H' and p[coor_to_ind.get(n)] == 'H':
-                energy += 1
+                energy += get_energy(p, i, coor_to_ind.get(n), table)
     return energy
 
-def mutation(p: list[pts.Directions], ind_to_coor: dict, coor_to_ind: dict) -> tuple[list[pts.Directions], dict, dict]:
+def mutation(p: list[Directions], ind_to_coor: dict, coor_to_ind: dict) -> tuple[list[Directions], dict, dict]:
     mut_point = random.randint(1, len(p) - 2)
     res = p[0:mut_point]
-    res.append(random.choice(list(pts.Directions)))
+    res.append(random.choice(list(Directions)))
     res = res + p[mut_point + 1:]
     ind_to_coor = {0 : (0,0,0)}
     coor_to_ind = {(0,0,0) : 0}
@@ -110,7 +147,7 @@ def mutation(p: list[pts.Directions], ind_to_coor: dict, coor_to_ind: dict) -> t
             i += 1
     return (p, ind_to_coor, coor_to_ind)
 
-def cross(p1: list[pts.Directions], p2: list[pts.Directions]) -> tuple[tuple[list[pts.Directions], dict, dict], tuple[list[pts.Directions], dict, dict]]:
+def cross(p1: list[Directions], p2: list[Directions]) -> tuple[tuple[list[Directions], dict, dict], tuple[list[Directions], dict, dict]]:
     cross_point = random.randint(1, len(p1) - 2)
     child1 = [d for d in p1[0:cross_point]] + [d for d in p2[cross_point:]]
     child2 = [d for d in p2[0:cross_point]] + [d for d in p1[cross_point:]]
@@ -162,18 +199,15 @@ def cross(p1: list[pts.Directions], p2: list[pts.Directions]) -> tuple[tuple[lis
             i += 1
     return (child1, ind_to_coor1, coor_to_ind1), (child2, ind_to_coor2, coor_to_ind2)
 
-def genetic(N: int, it: int, p: str):
+def genetic(N: int, it: int, p: str, table: list[list[int]]):
     population = None
     while population == None:
         population = initial_population(p, N)
-    #res_aprox = apx.algorithmC(apx.format_seq(p), math.sqrt)
-    #ind_to_coor_aprox, coor_to_ind_aprox, _ = apx.prot_coord(res_aprox, in3D = True)
-    #population.append((res_aprox, ind_to_coor_aprox, coor_to_ind_aprox))
     best_ins = []
     best_sol = 0
     for _ in range(it):
         new_pop = []
-        pop_fitness = [fitness(p, ind, coor) for (_, ind, coor) in population]
+        pop_fitness = [fitness(p, ind, coor, table) for (_, ind, coor) in population]
         aux_sol = max(pop_fitness)
         if aux_sol > best_sol:
             best_sol = aux_sol
@@ -213,25 +247,74 @@ def genetic(N: int, it: int, p: str):
                 while aux == None:
                     aux = mutation(child2[0], child2[1], child2[2])
                 child2 = aux
-            if fitness(p, to_cross[i][1], to_cross[i][2]) < fitness(p, child1[1], child1[2]):
+            if fitness(p, to_cross[i][1], to_cross[i][2], table) < fitness(p, child1[1], child1[2], table):
                 new_pop.append(child1)
             else:
                 new_pop.append(to_cross[i])
-            if fitness(p, to_cross[i+1][1], to_cross[i+1][2]) < fitness(p, child2[1], child2[2]):
+            if fitness(p, to_cross[i+1][1], to_cross[i+1][2], table) < fitness(p, child2[1], child2[2], table):
                 new_pop.append(child2)
             else:
                 new_pop.append(to_cross[i+1])
         population = new_pop
-    pop_fitness = [fitness(p, ind, coor) for (_, ind, coor) in population]
+    pop_fitness = [fitness(p, ind, coor, table) for (_, ind, coor) in population]
     aux_sol = max(pop_fitness)
     if aux_sol > best_sol:
         best_sol = aux_sol
         best_ins = population[np.argmax(pop_fitness)]
     return best_ins, best_sol
 
-def protein_fold(p: str):
-    ins, fit = genetic(100, 150, p)
-    print('El valor obtenido por el algoritmo genético es', fit)
+def initial_tables(N):
+    tables = [0] * N
+    for i in range(N):
+        tab = []
+        for j in range(NO_GRUPOS):
+            tab.append([random.randint(-10, 10) for _ in range(NO_GRUPOS - j)])
+        tables[i] = tab
+    return tables
+
+def compare(ins, media: float, archivo) -> float:
+    subprocess.run("cp %s ../LGA_package_src/MOL2/prueba.pdb" % archivo, shell = True, executable="/bin/bash", stdout=PIPE, stderr=PIPE)
+    f = open("../LGA_package_src/MOL2/prueba.pdb", "a")
+    i = 0
+    f.write("\nMOLECULE genetico\n")
+    for c in ins[2]:
+        f.write("ATOM  ")
+        f.write("%5d " % (i+1))
+        f.write("CA   ")
+        f.write("%s A%4d    " % ("ABC", i+1))
+        f.write("%8.3f" % (c[0] * media))
+        f.write("%8.3f" % (c[1] * media))
+        f.write("%8.3f  1.00 83.00           C\n" % (c[2] * media))
+        i += 1
+    f.write("END\n")
+    f.close()
+    p1 = subprocess.run("""cd ../LGA_package_src/; ulimit -s unlimited; ./lga -3 -gdt prueba.pdb | grep "GDT PERCENT_AT" | awk '{ V=($4+$6+$10+$18)/4.0; printf \"%7.3f\",V; }'""", shell = True, stdout = PIPE)
+    return float(p1.stdout)
+
+
+def protein_fold(N):
+    #leer proteinas, supongamos lp
+    archivos = os.listdir(".")
+    archivos.remove('supergenetic.py')
+    tables = initial_tables(N)
+    for archivo in archivos:
+        coords = []
+        p = []
+        with open(archivo, "r") as file:
+            while True:
+                line = file.readline()
+                if not line:
+                    break
+                line = line.split()
+                if line[0] == 'ATOM' and line[2] == 'CA':
+                    coords.append((float(line[6]), float(line[7]), float(line[8])))
+                    p.append(line[3])
+        media = sum([abs(coords[i][0] - coords[i-1][0]) + abs(coords[i][1] - coords[i-1][1]) + abs(coords[i][2] - coords[i-1][2]) for i in range(1, len(coords))]) / (len(coords) - 1)
+        for i in range(N):
+            print(tables[i])
+            ins, fit = genetic(100, 500, translation(p), tables[i])
+            print('El valor obtenido por el algoritmo genético con la tabla %d es %s' % (i, fit))
+            print('El valor de similitud para la proteína %s es de %7.3f%%' % (archivo, compare(ins, media, archivo)))
     """color = []
     for ch in p:
         if ch == 'H':
@@ -247,6 +330,8 @@ def protein_fold(p: str):
     ax.scatter3D(coord_x, coord_y, coord_z, c = color, zorder = 2)
     plt.axis('equal')
     plt.show()"""
+
+protein_fold(1)
 
 #str_seq = 'HPPPHPPPHPPPHHPPPHPPPHPPPHPPPHPPPHPPPHPHPPPHPPPHPPPHHPPPHPPPHPPPHPPPHPPPHPPPHPHPPPHPPPHPPPHHPPPHPPPHPPPHPPPHPPPHPPPHPHPPPHPPPHPPPHHPPPHPPPHPPPHPPPHPPPHPPPHP'
 #protein_fold(str_seq)
