@@ -7,6 +7,7 @@ from mpl_toolkits import mplot3d
 import subprocess
 from subprocess import PIPE
 import os
+import ast
 
 Directions = Enum('Directions', ['U', 'D', 'L', 'R', 'F', 'B'])
 
@@ -204,7 +205,7 @@ def genetic(N: int, it: int, p: str, table: list[list[int]]):
     while population == None:
         population = initial_population(p, N)
     best_ins = []
-    best_sol = 0
+    best_sol = -100000
     for _ in range(it):
         new_pop = []
         pop_fitness = [fitness(p, ind, coor, table) for (_, ind, coor) in population]
@@ -213,6 +214,8 @@ def genetic(N: int, it: int, p: str, table: list[list[int]]):
             best_sol = aux_sol
             best_ins = population[np.argmax(pop_fitness)]
         to_cross = []
+        if N % 2 != 0:
+            new_pop.append(population.pop())
         for i in range(N // 2):
             r1 = random.randint(0, len(population) - 1)
             parent1 = population.pop(r1)
@@ -291,31 +294,128 @@ def compare(ins, media: float, archivo) -> float:
     p1 = subprocess.run("""cd ../LGA_package_src/; ulimit -s unlimited; ./lga -3 -gdt prueba.pdb | grep "GDT PERCENT_AT" | awk '{ V=($4+$6+$10+$18)/4.0; printf \"%7.3f\",V; }'""", shell = True, stdout = PIPE)
     return float(p1.stdout)
 
+def table_cross(tb1: list[list[int]], tb2: list[list[int]]) -> tuple[list[list[int]], list[list[int]]]:
+    child1 = []
+    child2 = []
+    for i in range(NO_GRUPOS):
+        child1.append([0] * (NO_GRUPOS - i))
+        child2.append([0] * (NO_GRUPOS - i))
+        for j in range(NO_GRUPOS - i):
+            r = random.random()
+            if r > 0.5:
+                child1[i][j] = tb1[i][j]
+                child2[i][j] = tb2[i][j]
+            else:
+                child1[i][j] = tb2[i][j]
+                child2[i][j] = tb1[i][j]
+    return child1, child2
 
-def protein_fold(N):
+def table_mutation(tb: list[list[int]]) -> list[list[int]]:
+    i = random.randint(0, NO_GRUPOS-1)
+    j = random.randint(0, NO_GRUPOS - 1 - i)
+    tb[i][j] = random.randint(-10, 10)
+    return tb
+
+
+def protein_fold(N: int, it: int, N_inf: int, it_inf: int, ini_table = None, ini_score = None, ini_best_table = None, ini_best_score = None):
     #leer proteinas, supongamos lp
     archivos = os.listdir(".")
     archivos.remove('supergenetic.py')
-    tables = initial_tables(N)
-    for archivo in archivos:
-        coords = []
-        p = []
-        with open(archivo, "r") as file:
-            while True:
-                line = file.readline()
-                if not line:
-                    break
-                line = line.split()
-                if line[0] == 'ATOM' and line[2] == 'CA':
-                    coords.append((float(line[6]), float(line[7]), float(line[8])))
-                    p.append(line[3])
-        media = sum([abs(coords[i][0] - coords[i-1][0]) + abs(coords[i][1] - coords[i-1][1]) + abs(coords[i][2] - coords[i-1][2]) for i in range(1, len(coords))]) / (len(coords) - 1)
+    archivos.remove('resultados_it_18.txt')
+    if ini_table == None:
+        tables = initial_tables(N-3)
+        tables.append([[1,1,0,0,0],[1,0,0,0],[0,0,0],[0,0],[0]])
+        tables.append([[4,4,0,0,0],[4,0,0,0],[-1,1,0],[-1,0],[0]])
+        tables.append([[-2,4,0,0,0],[3,0,0,0],[-1,1,0],[-1,0],[0]])
+        best_table = []
+        best_score = 0
+        tables_result = [None] * N
+    else:
+        tables = ini_table
+        tables_result = ini_score
+        best_table = ini_best_table
+        best_score = ini_best_score
+    for iter in range(it):
         for i in range(N):
-            print(tables[i])
-            ins, fit = genetic(100, 500, translation(p), tables[i])
-            print('El valor obtenido por el algoritmo genético con la tabla %d es %s' % (i, fit))
-            print('El valor de similitud para la proteína %s es de %7.3f%%' % (archivo, compare(ins, media, archivo)))
-    """color = []
+            if tables_result[i] == None:
+                tables_result[i] = 0
+                for archivo in archivos:
+                    coords = []
+                    p = []
+                    with open(archivo, "r") as file:
+                        while True:
+                            line = file.readline()
+                            if not line:
+                                break
+                            line = line.split()
+                            if line[0] == 'ATOM' and line[2] == 'CA':
+                                coords.append((float(line[6]), float(line[7]), float(line[8])))
+                                p.append(line[3])
+                    media = sum([abs(coords[i][0] - coords[i-1][0]) + abs(coords[i][1] - coords[i-1][1]) + abs(coords[i][2] - coords[i-1][2]) for i in range(1, len(coords))]) / (len(coords) - 1)
+                    ins, fit = genetic(N_inf, it_inf, translation(p), tables[i])
+                    score = compare(ins, media, archivo)
+                    tables_result[i] += score
+                    print('El valor obtenido por el algoritmo genético con la tabla %d es %s' % (i, fit))
+                    print('El valor de similitud para la proteína %s es de %7.3f%%' % (archivo, score))
+                tables_result[i] /= len(archivos)
+        max_score = max(tables_result)
+        max_table = tables[np.argmax(tables_result)]
+        if max_score > best_score:
+            best_score = max_score
+            best_table = max_table
+        save = "../resultados_it_" + str(iter) + ".txt"
+        with open(save, "w") as file:
+            for t in range(len(tables)):
+                file.write("Tabla número %d\n" % t)
+                file.write(str(tables[t]) + '\n')
+                file.write(str(tables_result[t]) + '\n')
+        new_tables = []
+        new_tables_result = []
+        to_cross = []
+        to_cross_fit = []
+        if N % 2 != 0:
+            new_tables.append(tables.pop())
+            new_tables_result.append(tables_result.pop())
+        for i in range(N // 2):
+            r1 = random.randint(0, len(tables) - 1)
+            fit1 = tables_result[r1]
+            parent1 = tables.pop(r1)
+            r2 = random.randint(0, len(tables) - 1)
+            fit2 = tables_result[r2]
+            parent2 = tables.pop(r2)
+            if tables_result[r1] > tables_result[r2]:
+                to_cross.append(parent1)
+                to_cross_fit.append(fit1)
+                new_tables.append(parent2)
+                new_tables_result.append(fit2)
+            else:
+                to_cross.append(parent2)
+                to_cross_fit.append(fit2)
+                new_tables.append(parent1)
+                new_tables_result.append(fit1)
+        for i in range(0, len(to_cross), 2):
+            if i + 1 >= len(to_cross):
+                new_tables.append(to_cross[i])
+                new_tables_result.append(to_cross_fit[i])
+                break
+            r = random.random()
+            if r <= 0.7:
+                child1, child2 = table_cross(to_cross[i], to_cross[i + 1])
+            else:
+                child1, child2 = to_cross[i], to_cross[i + 1]
+            r = random.random()
+            if r <= 0.1:
+                child1 = table_mutation(child1)
+            r = random.random()
+            if r <= 0.1:
+                child2 = table_mutation(child2)
+            new_tables.append(child1)
+            new_tables.append(child2)
+            new_tables_result.append(None)
+            new_tables_result.append(None)
+        tables = new_tables
+        tables_result = new_tables_result
+        """color = []
     for ch in p:
         if ch == 'H':
             color.append('black')
@@ -330,8 +430,34 @@ def protein_fold(N):
     ax.scatter3D(coord_x, coord_y, coord_z, c = color, zorder = 2)
     plt.axis('equal')
     plt.show()"""
+    return best_table, best_score
 
-protein_fold(1)
+def take_data(archivo: str):
+    best_score = 0
+    best_table = []
+    ini_tables = []
+    ini_scores = []
+    with open(archivo, "r") as file:
+        while True:
+            _ = file.readline()
+            line1 = file.readline()[:-1]
+            line2 = file.readline()[:-1]
+            if not line1:
+                break
+            line1 = ast.literal_eval(line1)
+            line2 = float(line2)
+            ini_tables.append(line1)
+            ini_scores.append(line2)
+            if line2 > best_score:
+                best_score = line2
+                best_table = line1
+    return ini_tables, ini_scores, best_table, best_score
+
+ini_tables, ini_scores, best_table, best_score = take_data("resultados_it_18.txt")
+
+table, score = protein_fold(20, 2, 50, 500, ini_tables, ini_scores, best_table, best_score)
+print('La mejor tabla encontrada es', table)
+print('Y su puntuación media de similitud es', score)
 
 #str_seq = 'HPPPHPPPHPPPHHPPPHPPPHPPPHPPPHPPPHPPPHPHPPPHPPPHPPPHHPPPHPPPHPPPHPPPHPPPHPPPHPHPPPHPPPHPPPHHPPPHPPPHPPPHPPPHPPPHPPPHPHPPPHPPPHPPPHHPPPHPPPHPPPHPPPHPPPHPPPHP'
 #protein_fold(str_seq)

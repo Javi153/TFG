@@ -1,0 +1,9 @@
+Población de tablas: 20
+Número de iteraciones: 20
+Tiempo estimado: 20 horas
+Número de proteínas: 15 -> 7 cortas y 8 medianas (menos de 100 aminos)
+Población de proteínas: 50
+Iteraciones de proteínas: 500
+Mejor similitud: 27.634733333333337
+Mejor tabla: [[-9, -6, -9, 3, -8], [6, 3, 9, -8], [-10, 1, 5], [9, 0], [10]]
+Valores de similitud usuales: 24 - 25.5

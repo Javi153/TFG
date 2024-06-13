@@ -1,0 +1,8 @@
+Poblacion de tablas: 15
+Número de iteraciones: 10 (solo se realizaron 6)
+Tiempo estimado: 12h
+Muestra de proteínas: 16 -> 6 my cortas (sobre 20 aminos), 5 largas (sobre 100 aminos) y 5 muy largas (sobre 170)
+Población de proteínas: 100
+Iteración de proteínas: 500
+Mejor similitud: 22.005058823529417
+Mejor tabla: [[-5, 1, 6, 5, 2], [8, -8, -10, -10], [4, 4, 9], [-10, 5], [-3]]
