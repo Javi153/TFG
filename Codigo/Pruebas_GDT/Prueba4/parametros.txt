@@ -1,0 +1,8 @@
+Número de tablas: 40
+Número de iteraciones: 40 (se realizaron 23)
+Proteínas: 7 cortas (unos 20 aminoácidos)
+Población de proteínas: 100
+Iteraciones proteínas: 500
+Mejor similitud: 41.51714285714286%
+Mejor tabla: [[-8, -8, 1, 1, -2], [-9, 3, -8, -10], [0, 1, -5], [-3, -3], [0]]
+Valores usuales: 32-36%

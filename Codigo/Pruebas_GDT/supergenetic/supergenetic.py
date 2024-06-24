@@ -317,11 +317,10 @@ def table_mutation(tb: list[list[int]]) -> list[list[int]]:
     return tb
 
 
-def protein_fold(N: int, it: int, N_inf: int, it_inf: int, ini_table = None, ini_score = None, ini_best_table = None, ini_best_score = None):
+def protein_fold(N: int, it: int, N_inf: int, it_inf: int, ini_iter = 0, ini_table = None, ini_score = None, ini_best_table = None, ini_best_score = None):
     #leer proteinas, supongamos lp
     archivos = os.listdir(".")
     archivos.remove('supergenetic.py')
-    archivos.remove('resultados_it_18.txt')
     if ini_table == None:
         tables = initial_tables(N-3)
         tables.append([[1,1,0,0,0],[1,0,0,0],[0,0,0],[0,0],[0]])
@@ -335,7 +334,7 @@ def protein_fold(N: int, it: int, N_inf: int, it_inf: int, ini_table = None, ini
         tables_result = ini_score
         best_table = ini_best_table
         best_score = ini_best_score
-    for iter in range(it):
+    for iter in range(ini_iter, it):
         for i in range(N):
             if tables_result[i] == None:
                 tables_result[i] = 0
@@ -401,18 +400,22 @@ def protein_fold(N: int, it: int, N_inf: int, it_inf: int, ini_table = None, ini
             r = random.random()
             if r <= 0.7:
                 child1, child2 = table_cross(to_cross[i], to_cross[i + 1])
+                fit1, fit2 = None, None
             else:
                 child1, child2 = to_cross[i], to_cross[i + 1]
+                fit1, fit2 = to_cross_fit[i], to_cross_fit[i+1]
             r = random.random()
             if r <= 0.1:
                 child1 = table_mutation(child1)
+                fit1 = None
             r = random.random()
             if r <= 0.1:
                 child2 = table_mutation(child2)
+                fit2 = None
             new_tables.append(child1)
             new_tables.append(child2)
-            new_tables_result.append(None)
-            new_tables_result.append(None)
+            new_tables_result.append(fit1)
+            new_tables_result.append(fit2)
         tables = new_tables
         tables_result = new_tables_result
         """color = []
@@ -453,17 +456,7 @@ def take_data(archivo: str):
                 best_table = line1
     return ini_tables, ini_scores, best_table, best_score
 
-ini_tables, ini_scores, best_table, best_score = take_data("resultados_it_18.txt")
-
-table, score = protein_fold(20, 2, 50, 500, ini_tables, ini_scores, best_table, best_score)
+ini_tables, ini_score, best_table, best_score = take_data("../resultados_it_6.txt")
+table, score = protein_fold(40, 200, 100, 2000, 6, ini_tables, ini_score, best_table, best_score)
 print('La mejor tabla encontrada es', table)
 print('Y su puntuación media de similitud es', score)
-
-#str_seq = 'HPPPHPPPHPPPHHPPPHPPPHPPPHPPPHPPPHPPPHPHPPPHPPPHPPPHHPPPHPPPHPPPHPPPHPPPHPPPHPHPPPHPPPHPPPHHPPPHPPPHPPPHPPPHPPPHPPPHPHPPPHPPPHPPPHHPPPHPPPHPPPHPPPHPPPHPPPHP'
-#protein_fold(str_seq)
-
-#str_seq = 'HPPHPHHPHHPPHPHPHHHPHPHPPHPHPHHPHPPHHHPHPHHPHPPPPHHHPPHHPHPHHPHHPPHPHPPHPPHHHPPHPPHPPHPHHPHPHPPHPHPHHPHPPHHHPHPHHPHPPPPHHHPPHHPHPHHPHH'
-#protein_fold(str_seq)
-
-#str_seq = 'HPPHHHPHPPPHHPHPPPHPHHHPPHHPHPHPHPHHHPPHPHPPHPHPHHHPHPHPHHHPHPPPHHPPHPPPHPPHPHPPPPHHPHPPHPHPHHPPHPHPPHPHHPPHHPHPHHPHPHPPHHHPHP'
-#protein_fold(str_seq)
