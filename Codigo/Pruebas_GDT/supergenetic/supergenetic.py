@@ -456,7 +456,7 @@ def take_data(archivo: str):
                 best_table = line1
     return ini_tables, ini_scores, best_table, best_score
 
-ini_tables, ini_score, best_table, best_score = take_data("../resultados_it_40.txt")
-table, score = protein_fold(40, 200, 100, 2000, 40, ini_tables, ini_score, best_table, best_score)
+ini_tables, ini_score, best_table, best_score = take_data("../resultados_it_106.txt")
+table, score = protein_fold(40, 200, 100, 2000, 106, ini_tables, ini_score, best_table, best_score)
 print('La mejor tabla encontrada es', table)
 print('Y su puntuación media de similitud es', score)
