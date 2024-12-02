@@ -6,8 +6,10 @@ worst_score = 100
 worst_table = []
 score_mean = 0
 tables = []
-for i in range(43, 100):
-    archivo = "resultados_it_%d.txt" % i
+ini = 0
+fin = 109
+for i in range(ini, fin):
+    archivo = "Prueba5/resultados_it_%d.txt" % i
     with open(archivo, "r") as file:
         aux = 0
         score_aux = 0
@@ -32,7 +34,7 @@ for i in range(43, 100):
                     worst_score = line2
                     worst_table = line1
     score_mean += score_aux / aux
-score_mean /= (100-43)
+score_mean /= (fin - ini)
 print("La mejor puntuación es", best_score, best_table)
 print("La peor puntuación es", worst_score, worst_table)
 print("La media de valores es", score_mean)
