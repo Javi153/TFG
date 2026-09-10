@@ -1,0 +1,26 @@
+
+Structure conformation INDEPENDENT search
+./lga z2.1wdn_A -5 -sia -o2 -d:5 -fit:2:13:307_A -aa1:303:329 -r
+with test of the model 00 for its modified conformation fit
+cat TMP/z2.1wdn_A_00.pdb TMP/z2.1wdn_A_00.lga > MOL2/zzz
+./lga zzz -3 -sia -o2 -al -gdc -aa1:303:329
+
+
+Testing different tightness requirements (0,1,2,3: number of residues witin 0.5 distance)
+./lga z2.1wdn_A -5 -sia -o2 -d:5 -fit:3:2:307_A -aa1:303:329 -r
+./lga z2.1wdn_A -5 -sia -o2 -d:5 -fit:2:2:307_A -aa1:303:329 -r
+./lga z2.1wdn_A -5 -sia -o2 -d:5 -fit:1:2:307_A -aa1:303:329 -r
+./lga z2.1wdn_A -5 -sia -o2 -d:5 -fit:0:2:307_A -aa1:303:329 -r
+
+
+Structure conformation DEPENDENT search for a linker length when anchors are fixed
+ ./lga 1wdn_A.z2 -5 -sda -o2 -d:5 -fit:0:1:307_A -aa2:303:327 -r 
+ ./lga 1wdn_A.z2 -5 -sda -o2 -d:5 -fit:0:2:307_A -aa2:303:327 -r 
+ ./lga 1wdn_A.z2 -5 -sda -o2 -d:5 -fit:0:3:307_A -aa2:303:327 -r 
+ ./lga 1wdn_A.z2 -5 -sda -o2 -d:5 -fit:0:4:307_A -aa2:303:327 -r 
+ ./lga 1wdn_A.z2 -5 -sda -o2 -d:5 -fit:0:5:307_A -aa2:303:327 -r 
+ ./lga 1wdn_A.z2 -5 -sda -o2 -d:5 -fit:0:6:307_A -aa2:303:327 -r 
+ ./lga 1wdn_A.z2 -5 -sda -o2 -d:5 -fit:0:7:307_A -aa2:303:327 -r 
+ ./lga 1wdn_A.z2 -5 -sda -o2 -d:5 -fit:0:8:307_A -aa2:303:327 -r 
+ ./lga 1wdn_A.z2 -5 -sda -o2 -d:5 -fit:0:9:307_A -aa2:303:327 -r 
+ ./lga 1wdn_A.z2 -5 -sda -o2 -d:5 -fit:0:10:307_A -aa2:303:327 -r 

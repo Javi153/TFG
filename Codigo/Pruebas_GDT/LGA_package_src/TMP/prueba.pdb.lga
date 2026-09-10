@@ -1,0 +1,61 @@
+
+#      Molecule1      Molecule2  DISTANCE
+LGA    M     1_A      #     1_A    95.629
+LGA    Q     2_A      #     2_A    88.025
+LGA    A     3_A      #     3_A    86.132
+LGA    P     4_A      #     4_A    87.039
+LGA    D     5_A      #     5_A    85.798
+LGA    S     6_A      #     6_A    79.954
+LGA    V     7_A      #     7_A    77.432
+LGA    R     8_A      #     8_A    72.225
+LGA    S     9_A      #     9_A    67.043
+LGA    V    10_A      #    10_A    61.531
+LGA    K    11_A      #    11_A    61.491
+LGA    V    12_A      #    12_A    62.369
+LGA    E    13_A      #    13_A    57.470
+LGA    R    14_A      #    14_A    60.157
+LGA    E    15_A      #    15_A    62.528
+LGA    A    16_A      #    16_A    60.096
+LGA    K    17_A      #    17_A    60.189
+LGA    T    18_A      #    18_A    53.925
+LGA    W    19_A      #    19_A    56.958
+LGA    I    20_A      #    20_A    57.514
+LGA    E    21_A      #    21_A    58.732
+LGA    K    22_A      #    22_A    54.752
+LGA    P    23_A      #    23_A    55.091
+LGA    R    24_A      #    24_A    53.459
+LGA    G    25_A      #    25_A    49.195
+LGA    A    26_A      #    26_A    43.213
+LGA    G    27_A      #    27_A    38.301
+LGA    L    28_A      #    28_A    32.583
+LGA    R    29_A      #    29_A    27.091
+LGA    V    30_A      #    30_A    24.059
+LGA    A    31_A      #    31_A    19.329
+LGA    Q    32_A      #    32_A    12.707
+LGA    K    33_A      #    33_A    13.810
+LGA    T    34_A      #    34_A    11.296
+LGA    P    35_A      #    35_A     4.957
+LGA    V    36_A      #    36_A     4.892
+LGA    H    37_A      #    37_A    10.417
+LGA    A    38_A      #    38_A    11.890
+LGA    T    39_A      #    39_A     9.162
+LGA    T    40_A      #    40_A     3.246
+LGA    S    41_A      #    41_A     3.743
+LGA    L    42_A      #    42_A     3.490
+LGA    T    43_A      #    43_A     9.434
+LGA    L    44_A      #    44_A     8.719
+LGA    G    45_A      #    45_A     2.225
+LGA    T    46_A      #    46_A     1.722
+LGA    V    47_A      #    47_A     5.666
+LGA    V    48_A      #    48_A     4.350
+LGA    H    49_A      #    49_A     7.782
+LGA    L    50_A      #    50_A    10.798
+LGA    A    51_A      #    51_A     2.329
+LGA    F    52_A      #    52_A     7.139
+LGA    I    53_A      #    53_A     4.383
+LGA    I    54_A      #    54_A     3.549
+LGA    L    55_A      #    55_A     3.408
+LGA    P    56_A      #    56_A    10.505
+
+#CA            N1   N2   DIST      N    RMSD    GDT_TS    LGA_S3    GDT_HA   Seq_Id 
+SUMMARY(GDT)   56   56    5.0     12    3.61    15.625    13.666     8.036     0.00

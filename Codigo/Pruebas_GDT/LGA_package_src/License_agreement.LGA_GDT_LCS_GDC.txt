@@ -1,0 +1,76 @@
+LOCAL-GLOBAL ALIGNMENT FOR FINDING 3D SIMLARITIES IN PROTEIN STRUCTURES (LGA) 
+program by Adam Zemla
+
+Intellectual property rights of designed and developed LGA, GDT, and LCS measures and 
+algorithms are protected by US Patent:
+Patent No.: US 8,024,127 B2 (45) 
+
+The copyright and other intellectual property rights belong to Adam Zemla (hereinafter 
+known as the Author) and the current assignee: DOE, Lawrence Livermore National Security, LLC.
+
+
+Software License Agreement For Non-Profit Institutions Only
+
+End-users who wish to use the software for commercial purposes should contact Author at:
+zemla1@llnl.gov (or adam_zemla@yahoo.com).
+
+
+By downloading and using the program you are acknowledging the fact that you agree to 
+the terms of the agreement. If do not agree with all terms and conditions of the agreement, 
+you may not download, install nor use the program.  
+
+The User of the LGA program shall be bound by the following terms and conditions:
+
+1) The User will receive the LGA program and any related documentation in confidence and will 
+use the program for the purpose of his/her own research.
+
+2) The LGA program should be used at only one location by authorized users. 
+
+3) The User agrees to acknowledge the Author in any publication based in part on results 
+produced by the LGA program or any of its implemented algorithms or measures (e.g. LCS, GDT, GDC). 
+The publication should include the following primary citation:
+
+   A. Zemla: "LGA - a method for finding 3D similarities in protein structures", Nucleic Acids 
+   Research, Vol. 31, No. 13, 2003, pp. 3370-3374.
+   
+Additional citations in case of referencing some specifics in LCS, GDT, and GDC measures 
+(e.g.: LCS or GDT plots), or selection of point position within residues to represent protein 
+backbone for structure superposition calculations (e.g. options: "-atom","-bmo", and "-cb"):
+
+   A. Zemla, C. Venclovas, A. Reinhardt, K. Fidelis, T. J. Hubbard: "Numerical criteria for the 
+   evaluation of ab initio predictions of protein structure", PROTEINS: Structure, Function, and 
+   Genetics, 1997, Suppl.1, pp. 140-150.
+
+   A. Zemla, C. Venclovas, J. Moult, K. Fidelis: "Processing and analysis of CASP3 protein structure
+   predictions", Proteins: Structure, Function, and Genetics, Volume 37, Issue S3, 1999, pp. 22-29.
+
+   A. Zemla, C. Venclovas, J. Moult, K. Fidelis: "Processing and evaluation of predictions in CASP4",
+   Proteins: Structure, Function, and Genetics, Volume 45, Issue S5, 2001, pp. 13-21.
+
+   D. A. Keedy, C. J. Williams, J. J. Headd, W. B. Arendall III, V. B. Chen, G. J. Kapral,
+   R. A. Gillespie, J. N. Block, A. Zemla, D. C. Richardson, J. S. Richardson: "The other 90%
+   of the protein: Assessment beyond the Calphas for CASP8 template-based and high-accuracy
+   models", Proteins: Structure, Function, Bioinformatics, 2009, 77, pp. 29-49, 10.1002/prot.22551.
+   
+   A. Zemla, C. Ecale Zhou: "Structural re-alignment in an immunogenic surface region of 
+   ricin A chain", Bioinformatics and Biology Insights, 2008, v. 2, pp. 5-13.
+
+4) If any modifications to the LGA program are introduced, or any portion of the provided LGA 
+software is incorporated into other programs these should be communicated to the Author and any 
+publications that result from the modifications should include the appropriate citation to the 
+original publication as mentioned in paragraph 3. 
+
+5) The LGA program or any of its components should not be copied, distributed, transferred in 
+any form (internet transfer, discs, hard copies... ) nor sublicensed. The program or its parts 
+cannot be sold or incorporated into a commercial software. 
+
+6) The results of research obtained by using the LGA program should not be incorporated into 
+any data banks that are subject to license fees or any other payments.
+
+7) The User understands that the LGA program is provided "as is," and no warranty is issued. 
+The Author will not be held responsible for any damages caused by the use of the LGA program.
+
+
+
+Thank you for accepting and respecting all terms and conditions of this agreement. 
+
